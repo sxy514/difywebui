@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import 'katex/dist/katex.min.css'
 import RemarkMath from 'remark-math'
 import RemarkBreaks from 'remark-breaks'
 import RehypeKatex from 'rehype-katex'
 import RemarkGfm from 'remark-gfm'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { getFileExtension } from '@/app/components/base/file-uploader-in-attachment/utils'
 import { SupportUploadFileTypes } from '@/app/components/base/file-uploader-in-attachment/types'
@@ -214,11 +214,11 @@ export function Markdown({
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
                     <div className="syntax-highlighter-wrapper">
-                      <PrismCode
+                      <SyntaxHighlighter
                         {...props}
                         language={match[1]}
-                        className="line-numbers"
-                        style={{
+                        style={vscDarkPlus}
+                        customStyle={{
                           background: '#1e1e1e',
                           fontSize: '0.9em',
                           lineHeight: 1.5,
@@ -229,7 +229,7 @@ export function Markdown({
                         }}
                       >
                         {String(children).replace(/\n$/, '')}
-                      </PrismCode>
+                      </SyntaxHighlighter>
                     </div>
                   ) : (
                     <code {...props} className={className}>
