@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { atomDark, vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import 'katex/dist/katex.min.css'
 import RemarkMath from 'remark-math'
 import RemarkBreaks from 'remark-breaks'
@@ -170,7 +170,7 @@ export function Markdown({
                             showLineNumbers
                             customStyle={{
                               background: '#1e1e1e',
-                              fontSize: '0.9em',
+                              fontSize: '1.1em',
                               lineHeight: 1.5,
                               margin: 0,
                               padding: '1em',
@@ -217,10 +217,10 @@ export function Markdown({
                       <SyntaxHighlighter
                         {...props}
                         language={match[1]}
-                        style={vscDarkPlus}
+                        style={atomDark}
                         customStyle={{
                           background: '#1e1e1e',
-                          fontSize: '0.9em',
+                          fontSize: '1.1em',
                           lineHeight: 1.5,
                           margin: 0,
                           padding: '1em',
@@ -277,7 +277,7 @@ export function Markdown({
                     customStyle={{
                       background: '#ffffff',
                       color: '#333333',
-                      fontSize: '0.9em',
+                      fontSize: '1.3em',
                       lineHeight: 1.5,
                       margin: 0,
                       padding: '1em',
@@ -290,7 +290,8 @@ export function Markdown({
                     codeTagProps={{
                       style: {
                         fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
-                        background: 'transparent'
+                        background: 'transparent',
+                        fontSize: '1.1em !important'
                       }
                     }}
                     wrapLines={false}
