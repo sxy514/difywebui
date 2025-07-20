@@ -1,0 +1,140 @@
+/* Code block container */
+pre {
+  background-color: #ffffff !important;
+  color: #333333 !important;
+  border-radius: 6px;
+  padding: 1em !important;
+  margin: 0.5em 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 0.9em;
+  line-height: 1.5;
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-word;
+  border: 1px solid #eaeaea;
+}
+
+/* Line numbers */
+.react-syntax-highlighter-line-number {
+  color: #999999 !important;
+  user-select: none;
+  padding-right: 1em !important;
+  text-align: right;
+  min-width: 2.5em;
+  background-color: #ffffff !important;
+}
+
+/* Code content */
+pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: block;
+  overflow-x: auto;
+  padding: 0 0.5em;
+}
+
+/* Syntax highlighting */
+pre .token.comment,
+pre .token.prolog,
+pre .token.doctype,
+pre .token.cdata {
+  color: #5c6370;
+  font-style: italic;
+}
+
+pre .token.punctuation {
+  color: #abb2bf;
+}
+
+pre .token.property,
+pre .token.tag,
+pre .token.boolean,
+pre .token.number,
+pre .token.constant,
+pre .token.symbol,
+pre .token.deleted {
+  color: #d19a66;
+}
+
+pre .token.selector,
+pre .token.attr-name,
+pre .token.string,
+pre .token.char,
+pre .token.builtin,
+pre .token.inserted {
+  color: #98c379;
+}
+
+pre .token.operator,
+pre .token.entity,
+pre .token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #56b6c2;
+}
+
+pre .token.atrule,
+pre .token.attr-value,
+pre .token.keyword {
+  color: #c678dd;
+}
+
+pre .token.function,
+pre .token.class-name {
+  color: #61afef;
+}
+
+pre .token.regex,
+pre .token.important,
+pre .token.variable {
+  color: #e06c75;
+}
+
+/* Inline code */
+:not(pre) > code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(175, 184, 193, 0.2);
+  border-radius: 6px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* Dark theme for code blocks */
+.dark pre {
+  background-color: #1e1e1e !important;
+  color: #d4d4d4 !important;
+}
+
+.dark pre .token.comment,
+.dark pre .token.prolog,
+.dark pre .token.doctype,
+.dark pre .token.cdata {
+  color: #6a9955;
+}
+
+.dark pre .token.punctuation {
+  color: #d4d4d4;
+}
+
+.dark pre .token.keyword {
+  color: #569cd6;
+}
+
+.dark pre .token.operator,
+.dark pre .token.string {
+  color: #ce9178;
+}
+
+.dark pre .token.function {
+  color: #dcdcaa;
+}
+
+.dark pre .token.number {
+  color: #b5cea8;
+}

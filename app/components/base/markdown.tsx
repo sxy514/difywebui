@@ -5,11 +5,12 @@ import RemarkMath from 'remark-math'
 import RemarkBreaks from 'remark-breaks'
 import RehypeKatex from 'rehype-katex'
 import RemarkGfm from 'remark-gfm'
-import SyntaxHighlighter from 'react-syntax-highlighter'
-import { atelierHeathLight } from 'react-syntax-highlighter/dist/esm/styles/hljs'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 import { getFileExtension } from '@/app/components/base/file-uploader-in-attachment/utils'
 import { SupportUploadFileTypes } from '@/app/components/base/file-uploader-in-attachment/types'
+import './markdown.css'
 
 export type MessageFile = {
   id?: string
@@ -161,15 +162,34 @@ export function Markdown({
                     code({ node, inline, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || '')
                       return !inline && match ? (
-                        <SyntaxHighlighter
-                          {...props}
-                          style={atelierHeathLight}
-                          language={match[1]}
-                          showLineNumbers
-                          PreTag="div"
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
+                        <div className="syntax-highlighter-wrapper">
+                          <SyntaxHighlighter
+                            {...props}
+                            language={match[1]}
+                            style={vscDarkPlus}
+                            showLineNumbers
+                            customStyle={{
+                              background: '#1e1e1e',
+                              fontSize: '0.9em',
+                              lineHeight: 1.5,
+                              margin: 0,
+                              padding: '1em',
+                              borderRadius: '6px',
+                              overflow: 'auto'
+                            }}
+                            codeTagProps={{
+                              style: {
+                                fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                                background: 'transparent'
+                              }
+                            }}
+                            wrapLines={false}
+                            wrapLongLines={false}
+                            PreTag="div"
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        </div>
                       ) : (
                         <code {...props} className={className}>
                           {children}
@@ -193,15 +213,24 @@ export function Markdown({
                 code({ node, inline, className, children, ...props }) {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
-                    <SyntaxHighlighter
-                      {...props}
-                      style={atelierHeathLight}
-                      language={match[1]}
-                      showLineNumbers
-                      PreTag="div"
-                    >
-                      {String(children).replace(/\n$/, '')}
-                    </SyntaxHighlighter>
+                    <div className="syntax-highlighter-wrapper">
+                      <PrismCode
+                        {...props}
+                        language={match[1]}
+                        className="line-numbers"
+                        style={{
+                          background: '#1e1e1e',
+                          fontSize: '0.9em',
+                          lineHeight: 1.5,
+                          margin: 0,
+                          padding: '1em',
+                          borderRadius: '6px',
+                          overflow: 'auto'
+                        }}
+                      >
+                        {String(children).replace(/\n$/, '')}
+                      </PrismCode>
+                    </div>
                   ) : (
                     <code {...props} className={className}>
                       {children}
@@ -239,15 +268,38 @@ export function Markdown({
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
               return !inline && match ? (
-                <SyntaxHighlighter
-                  {...props}
-                  style={atelierHeathLight}
-                  language={match[1]}
-                  showLineNumbers
-                  PreTag="div"
-                >
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
+                <div className="syntax-highlighter-wrapper">
+                  <SyntaxHighlighter
+                    {...props}
+                    language={match[1]}
+                    style={vscDarkPlus}
+                    showLineNumbers
+                    customStyle={{
+                      background: '#ffffff',
+                      color: '#333333',
+                      fontSize: '0.9em',
+                      lineHeight: 1.5,
+                      margin: 0,
+                      padding: '1em',
+                      borderRadius: '6px',
+                      overflowX: 'hidden',
+                      overflowY: 'auto',
+                      maxWidth: '100%',
+                      border: '1px solid #eaeaea'
+                    }}
+                    codeTagProps={{
+                      style: {
+                        fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                        background: 'transparent'
+                      }
+                    }}
+                    wrapLines={false}
+                    wrapLongLines={false}
+                    PreTag="div"
+                  >
+                    {String(children).replace(/\n$/, '')}
+                  </SyntaxHighlighter>
+                </div>
               ) : (
                 <code {...props} className={className}>
                   {children}
