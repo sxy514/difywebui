@@ -1,8 +1,39 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark, vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import 'katex/dist/katex.min.css'
+import { DocumentDuplicateIcon, CheckIcon } from '@heroicons/react/24/outline'
+
+// CopyButton component
+const CopyButton = ({ content }: { content: string }) => {
+  const [copied, setCopied] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout>()
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setCopied(true)
+      
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy text: ', err)
+    }
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute right-2 top-2 p-1.5 rounded-md bg-gray-700 bg-opacity-70 text-gray-200 hover:bg-opacity-100 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
+      title="Copy code"
+      aria-label="Copy code"
+    >
+      {copied ? <CheckIcon className="w-4 h-4 text-green-400" /> : <DocumentDuplicateIcon className="w-4 h-4" />}
+    </button>
+  )
+}
+
 import RemarkMath from 'remark-math'
 import RemarkBreaks from 'remark-breaks'
 import RehypeKatex from 'rehype-katex'
@@ -213,7 +244,8 @@ export function Markdown({
                 code({ node, inline, className, children, ...props }) {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
-                    <div className="syntax-highlighter-wrapper">
+                    <div className="syntax-highlighter-wrapper relative group">
+                      <CopyButton content={String(children).replace(/\n$/, '')} />
                       <SyntaxHighlighter
                         {...props}
                         language={match[1]}
@@ -268,7 +300,8 @@ export function Markdown({
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
               return !inline && match ? (
-                <div className="syntax-highlighter-wrapper">
+                <div className="syntax-highlighter-wrapper relative group">
+                  <CopyButton content={String(children).replace(/\n$/, '')} />
                   <SyntaxHighlighter
                     {...props}
                     language={match[1]}
