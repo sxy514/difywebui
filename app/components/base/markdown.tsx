@@ -208,7 +208,7 @@ export function Markdown({
                   components={{
                     code({ node, inline, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || '')
-                      return !inline && match
+                      return (!inline && match)
                         ? (
                           <div className="syntax-highlighter-wrapper">
                             <SyntaxHighlighter
@@ -261,7 +261,7 @@ export function Markdown({
               components={{
                 code({ node, inline, className, children, ...props }) {
                   const match = /language-(\w+)/.exec(className || '')
-                  return !inline && match
+                  return (!inline && match)
                     ? (
                       <div className="syntax-highlighter-wrapper relative group">
                         <CopyButton content={String(children).replace(/\n$/, '')} />
@@ -319,7 +319,7 @@ export function Markdown({
           components={{
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
-              return !inline && match
+              return (!inline && match)
                 ? (
                   <div className="syntax-highlighter-wrapper relative group">
                     <CopyButton content={String(children).replace(/\n$/, '')} />
