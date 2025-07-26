@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { atomDark, vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import 'katex/dist/katex.min.css'
-import { DocumentDuplicateIcon, CheckIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, ChevronDownIcon, ChevronRightIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
+
+import RemarkMath from 'remark-math'
+import RemarkBreaks from 'remark-breaks'
+import RehypeKatex from 'rehype-katex'
+import RemarkGfm from 'remark-gfm'
+import './markdown.css'
 
 // CopyButton component
 const CopyButton = ({ content }: { content: string }) => {
@@ -12,12 +18,32 @@ const CopyButton = ({ content }: { content: string }) => {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(content)
+      // 尝试使用现代 Clipboard API
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(content)
+      }
+      else {
+        // 回退到旧方法
+        const textArea = document.createElement('textarea')
+        textArea.value = content
+        textArea.style.position = 'fixed'
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+
+        const successful = document.execCommand('copy')
+        document.body.removeChild(textArea)
+
+        if (!successful)
+          throw new Error('Failed to copy using execCommand')
+      }
+
       setCopied(true)
-      
-      if (timerRef.current) clearTimeout(timerRef.current)
+      if (timerRef.current)
+        clearTimeout(timerRef.current)
       timerRef.current = setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
+    }
+    catch (err) {
       console.error('Failed to copy text: ', err)
     }
   }
@@ -33,15 +59,6 @@ const CopyButton = ({ content }: { content: string }) => {
     </button>
   )
 }
-
-import RemarkMath from 'remark-math'
-import RemarkBreaks from 'remark-breaks'
-import RehypeKatex from 'rehype-katex'
-import RemarkGfm from 'remark-gfm'
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
-import { getFileExtension } from '@/app/components/base/file-uploader-in-attachment/utils'
-import { SupportUploadFileTypes } from '@/app/components/base/file-uploader-in-attachment/types'
-import './markdown.css'
 
 export type MessageFile = {
   id?: string
@@ -65,11 +82,13 @@ function ThinkBlock({ children }: { children: React.ReactNode }) {
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full text-left p-2 flex items-center gap-2 text-blue-700 hover:bg-blue-100 transition-colors"
       >
-        {isExpanded ? (
-          <ChevronDownIcon className="w-4 h-4" />
-        ) : (
-          <ChevronRightIcon className="w-4 h-4" />
-        )}
+        {isExpanded
+          ? (
+            <ChevronDownIcon className="w-4 h-4" />
+          )
+          : (
+            <ChevronRightIcon className="w-4 h-4" />
+          )}
         <span className="text-sm font-medium">Thinking</span>
       </button>
       {isExpanded && (
@@ -103,8 +122,6 @@ function ImageFile({ file }: { file: MessageFile }) {
       </div>
     )
   }
-
-
 
   const apiBaseUrl = process.env.NEXT_BASE_URL || 'http://192.168.0.110'
   const correctedUrl = apiBaseUrl + file.url
@@ -152,7 +169,7 @@ function ImageFile({ file }: { file: MessageFile }) {
 
 export function Markdown({
   content,
-  messageFiles = []
+  messageFiles = [],
 }: {
   content: string
   messageFiles?: MessageFile[]
@@ -160,9 +177,8 @@ export function Markdown({
   // Process content to extract think tags and final answer
   const processContent = (content: string) => {
     // Check if content contains think tags
-    if (!content.includes('<think>')) {
+    if (!content.includes('<think>'))
       return content // Return as is if no think tags
-    }
 
     // Split content into think blocks and final answer
     const thinkBlocks: string[] = []
@@ -192,40 +208,42 @@ export function Markdown({
                   components={{
                     code({ node, inline, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || '')
-                      return !inline && match ? (
-                        <div className="syntax-highlighter-wrapper">
-                          <SyntaxHighlighter
-                            {...props}
-                            language={match[1]}
-                            style={vscDarkPlus}
-                            showLineNumbers
-                            customStyle={{
-                              background: '#1e1e1e',
-                              fontSize: '1.1em',
-                              lineHeight: 1.5,
-                              margin: 0,
-                              padding: '1em',
-                              borderRadius: '6px',
-                              overflow: 'auto'
-                            }}
-                            codeTagProps={{
-                              style: {
-                                fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
-                                background: 'transparent'
-                              }
-                            }}
-                            wrapLines={false}
-                            wrapLongLines={false}
-                            PreTag="div"
-                          >
-                            {String(children).replace(/\n$/, '')}
-                          </SyntaxHighlighter>
-                        </div>
-                      ) : (
-                        <code {...props} className={className}>
-                          {children}
-                        </code>
-                      )
+                      return !inline && match
+                        ? (
+                          <div className="syntax-highlighter-wrapper">
+                            <SyntaxHighlighter
+                              {...props}
+                              language={match[1]}
+                              style={vscDarkPlus}
+                              showLineNumbers
+                              customStyle={{
+                                background: '#1e1e1e',
+                                fontSize: '1.1em',
+                                lineHeight: 1.5,
+                                margin: 0,
+                                padding: '1em',
+                                borderRadius: '6px',
+                                overflow: 'auto',
+                              }}
+                              codeTagProps={{
+                                style: {
+                                  fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                                  background: 'transparent',
+                                },
+                              }}
+                              wrapLines={false}
+                              wrapLongLines={false}
+                              PreTag="div"
+                            >
+                              {String(children).replace(/\n$/, '')}
+                            </SyntaxHighlighter>
+                          </div>
+                        )
+                        : (
+                          <code {...props} className={className}>
+                            {children}
+                          </code>
+                        )
                     },
                   }}
                 >
@@ -243,31 +261,33 @@ export function Markdown({
               components={{
                 code({ node, inline, className, children, ...props }) {
                   const match = /language-(\w+)/.exec(className || '')
-                  return !inline && match ? (
-                    <div className="syntax-highlighter-wrapper relative group">
-                      <CopyButton content={String(children).replace(/\n$/, '')} />
-                      <SyntaxHighlighter
-                        {...props}
-                        language={match[1]}
-                        style={atomDark}
-                        customStyle={{
-                          background: '#1e1e1e',
-                          fontSize: '1.1em',
-                          lineHeight: 1.5,
-                          margin: 0,
-                          padding: '1em',
-                          borderRadius: '6px',
-                          overflow: 'auto'
-                        }}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    </div>
-                  ) : (
-                    <code {...props} className={className}>
-                      {children}
-                    </code>
-                  )
+                  return !inline && match
+                    ? (
+                      <div className="syntax-highlighter-wrapper relative group">
+                        <CopyButton content={String(children).replace(/\n$/, '')} />
+                        <SyntaxHighlighter
+                          {...props}
+                          language={match[1]}
+                          style={atomDark}
+                          customStyle={{
+                            background: '#1e1e1e',
+                            fontSize: '1.1em',
+                            lineHeight: 1.5,
+                            margin: 0,
+                            padding: '1em',
+                            borderRadius: '6px',
+                            overflow: 'auto',
+                          }}
+                        >
+                          {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                      </div>
+                    )
+                    : (
+                      <code {...props} className={className}>
+                        {children}
+                      </code>
+                    )
                 },
               }}
             >
@@ -284,7 +304,7 @@ export function Markdown({
     .map(url => ({ url, type: 'image', belongs_to: 'assistant' } as MessageFile))
 
   const messageImageFiles = messageFiles.filter(file =>
-    file.type === 'image' && file.belongs_to === 'assistant'
+    file.type === 'image' && file.belongs_to === 'assistant',
   )
 
   const allImageFiles = [...messageImageFiles, ...contentImageUrls]
@@ -299,46 +319,48 @@ export function Markdown({
           components={{
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
-              return !inline && match ? (
-                <div className="syntax-highlighter-wrapper relative group">
-                  <CopyButton content={String(children).replace(/\n$/, '')} />
-                  <SyntaxHighlighter
-                    {...props}
-                    language={match[1]}
-                    style={vscDarkPlus}
-                    showLineNumbers
-                    customStyle={{
-                      background: '#ffffff',
-                      color: '#333333',
-                      fontSize: '1.3em',
-                      lineHeight: 1.5,
-                      margin: 0,
-                      padding: '1em',
-                      borderRadius: '6px',
-                      overflowX: 'hidden',
-                      overflowY: 'auto',
-                      maxWidth: '100%',
-                      border: '1px solid #eaeaea'
-                    }}
-                    codeTagProps={{
-                      style: {
-                        fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
-                        background: 'transparent',
-                        fontSize: '1.1em !important'
-                      }
-                    }}
-                    wrapLines={false}
-                    wrapLongLines={false}
-                    PreTag="div"
-                  >
-                    {String(children).replace(/\n$/, '')}
-                  </SyntaxHighlighter>
-                </div>
-              ) : (
-                <code {...props} className={className}>
-                  {children}
-                </code>
-              )
+              return !inline && match
+                ? (
+                  <div className="syntax-highlighter-wrapper relative group">
+                    <CopyButton content={String(children).replace(/\n$/, '')} />
+                    <SyntaxHighlighter
+                      {...props}
+                      language={match[1]}
+                      style={vscDarkPlus}
+                      showLineNumbers
+                      customStyle={{
+                        background: '#ffffff',
+                        color: '#333333',
+                        fontSize: '1.3em',
+                        lineHeight: 1.5,
+                        margin: 0,
+                        padding: '1em',
+                        borderRadius: '6px',
+                        overflowX: 'hidden',
+                        overflowY: 'auto',
+                        maxWidth: '100%',
+                        border: '1px solid #eaeaea',
+                      }}
+                      codeTagProps={{
+                        style: {
+                          fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                          background: 'transparent',
+                          fontSize: '1.1em !important',
+                        },
+                      }}
+                      wrapLines={false}
+                      wrapLongLines={false}
+                      PreTag="div"
+                    >
+                      {String(children).replace(/\n$/, '')}
+                    </SyntaxHighlighter>
+                  </div>
+                )
+                : (
+                  <code {...props} className={className}>
+                    {children}
+                  </code>
+                )
             },
           }}
           linkTarget={'_blank'}
