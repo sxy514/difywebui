@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { atomDark, vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism'
+import { prism } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import 'katex/dist/katex.min.css'
 import { CheckIcon, ChevronDownIcon, ChevronRightIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
 
@@ -214,7 +214,7 @@ export function Markdown({
                             <SyntaxHighlighter
                               {...props}
                               language={match[1]}
-                              style={vscDarkPlus}
+                              style={prism}
                               showLineNumbers
                               customStyle={{
                                 background: '#1e1e1e',
@@ -268,7 +268,7 @@ export function Markdown({
                         <SyntaxHighlighter
                           {...props}
                           language={match[1]}
-                          style={atomDark}
+                          style={prism}
                           customStyle={{
                             background: '#1e1e1e',
                             fontSize: '1.1em',
@@ -326,7 +326,7 @@ export function Markdown({
                     <SyntaxHighlighter
                       {...props}
                       language={match[1]}
-                      style={vscDarkPlus}
+                      style={prism}
                       showLineNumbers
                       customStyle={{
                         background: '#ffffff',
