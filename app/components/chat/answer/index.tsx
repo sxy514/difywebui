@@ -15,6 +15,7 @@ import WorkflowProcess from '@/app/components/workflow/workflow-process'
 import { Markdown } from '@/app/components/base/markdown'
 import Button from '@/app/components/base/button'
 import type { Emoji } from '@/types/tools'
+import EChart from '@/app/components/base/echart'
 
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => (
   <div
@@ -209,7 +210,52 @@ const Answer: FC<IAnswerProps> = ({
                 : (isAgentMode
                   ? agentModeAnswer
                   : (
-                    <Markdown content={content} />
+                    <>
+                      {(() => {
+                        const chartRegex = /\[chart\]([\s\S]*?)\[\/chart\]/g
+                        let lastIndex = 0
+                        const parts = []
+                        let match
+
+                        while ((match = chartRegex.exec(content)) !== null) {
+                          // 添加图表前的文本
+                          if (match.index > lastIndex) {
+                            parts.push(
+                              <Markdown key={`text-${lastIndex}`} content={content.substring(lastIndex, match.index)} />,
+                            )
+                          }
+
+                          // 添加图表
+                          try {
+                            const chartData = JSON.parse(match[1].trim())
+                            parts.push(
+                              <div key={`chart-${match.index}`} className="my-4">
+                                <EChart option={chartData} style={{ height: '400px' }} />
+                              </div>,
+                            )
+                          }
+                          catch (error) {
+                            const e = error as Error
+                            parts.push(
+                              <div key={`error-${match.index}`} className="text-red-500">
+                                图表解析错误: {e.message}
+                              </div>,
+                            )
+                          }
+
+                          lastIndex = match.index + match[0].length
+                        }
+
+                        // 添加剩余文本
+                        if (lastIndex < content.length) {
+                          parts.push(
+                            <Markdown key={'text-end'} content={content.substring(lastIndex)} />,
+                          )
+                        }
+
+                        return <>{parts}</>
+                      })()}
+                    </>
                   ))}
               {suggestedQuestions.length > 0 && (
                 <div className='mt-3'>
