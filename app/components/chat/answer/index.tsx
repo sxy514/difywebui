@@ -215,9 +215,9 @@ const Answer: FC<IAnswerProps> = ({
                         const chartRegex = /\[chart\]([\s\S]*?)\[\/chart\]/g
                         let lastIndex = 0
                         const parts = []
-                        let match
 
-                        while ((match = chartRegex.exec(content)) !== null) {
+                        let match = chartRegex.exec(content)
+                        while (match !== null) {
                           // 添加图表前的文本
                           if (match.index > lastIndex) {
                             parts.push(
@@ -244,6 +244,7 @@ const Answer: FC<IAnswerProps> = ({
                           }
 
                           lastIndex = match.index + match[0].length
+                          match = chartRegex.exec(content)
                         }
 
                         // 添加剩余文本
