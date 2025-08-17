@@ -3,6 +3,14 @@ import bcrypt from 'bcrypt'
 import prisma from '@/service/prisma'
 
 export async function POST(req: Request) {
+    // 添加注册开关检查
+    if (process.env.DISABLE_REGISTRATION === 'true') {
+        return NextResponse.json(
+            { error: '新用户注册已关闭' },
+            { status: 403 },
+        )
+    }
+
     try {
         const { username, email, password } = await req.json()
         console.log('Register request received:', { username, email })
@@ -48,7 +56,7 @@ export async function POST(req: Request) {
         })
     }
     catch (err) {
-        // 处理TypeScript错误：将err断言为Error类型
+        // 简化错误类型断言
         const error = err as Error
         console.error('Registration error details:', error)
         return NextResponse.json({
