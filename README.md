@@ -14,6 +14,12 @@ NEXT_PUBLIC_APP_KEY=
 
 # APP URL: This is the API's base URL. If you're using the Dify cloud service, set it to: https://api.dify.ai/v1.
 NEXT_PUBLIC_API_URL=
+
+# JWT secret key for authentication
+JWT_SECRET=
+
+# MySQL database connection
+DATABASE_URL=
 ```
 
 Config more in `config/index.ts` file:   
@@ -39,6 +45,38 @@ yarn
 # or
 pnpm install
 ```
+
+## Database Setup
+After installing dependencies, set up your database:
+
+1. Create `.env.local` file with database configuration:
+```bash
+cp .env.example .env.local
+```
+
+2. Edit `.env.local` and set your database credentials:
+```env
+# MySQL database connection
+DATABASE_URL="mysql://username:password@localhost:3306/dbname"
+
+# JWT secret key for authentication
+JWT_SECRET=your_strong_secret_key_here
+```
+
+3. Run database migrations:
+```bash
+npx prisma migrate dev --name init
+```
+This command will:
+- Create database tables based on the Prisma schema
+- Generate Prisma Client for database operations
+- Seed initial data if defined
+
+4. (Optional) Start Prisma Studio to view database:
+```bash
+npx prisma studio
+```
+Visit http://localhost:5555 to explore your database
 
 Then, run the development server:
 
