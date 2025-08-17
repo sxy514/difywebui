@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const path = require('node:path')
+
 const nextConfig = {
   productionBrowserSourceMaps: false, // enable browser source map generation during the production build
   // Configure pageExtensions to include md and mdx
@@ -15,6 +17,13 @@ const nextConfig = {
   typescript: {
     // https://nextjs.org/docs/api-reference/next.config.js/ignoring-typescript-errors
     ignoreBuildErrors: true,
+  },
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname),
+    }
+    return config
   },
 }
 

@@ -1,0 +1,19 @@
+// 定义数据源
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 添加生成器配置
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 定义User模型
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}

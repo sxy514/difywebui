@@ -1,25 +1,27 @@
-import { getLocaleOnServer } from '@/i18n/server'
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { AuthProvider } from './context/auth-context'
 
-import './styles/globals.css'
-import './styles/markdown.scss'
+const inter = Inter({ subsets: ['latin'] })
 
-const LocaleLayout = ({
+export const metadata: Metadata = {
+  title: 'AMHS智能助手',
+  description: 'AMHS智能助手',
+}
+
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
-}) => {
-  const locale = getLocaleOnServer()
+}) {
   return (
-    <html lang={locale ?? 'en'} className="h-full">
-      <body className="h-full">
-        <div className="overflow-x-auto">
-          <div className="w-screen h-screen min-w-[300px]">
-            {children}
-          </div>
-        </div>
+    <html lang="zh-CN">
+      <body className={inter.className}>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )
 }
-
-export default LocaleLayout
