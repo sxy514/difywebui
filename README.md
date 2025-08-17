@@ -20,6 +20,9 @@ JWT_SECRET=
 
 # MySQL database connection
 DATABASE_URL=
+
+# Disable new user registration. if set to true, new users are unable to use the registration function.
+DISABLE_REGISTRATION=false
 ```
 
 Config more in `config/index.ts` file:   
@@ -52,6 +55,7 @@ After installing dependencies, set up your database:
 1. Create `.env.local` file with database configuration:
 ```bash
 cp .env.example .env.local
+cp .env.example .env
 ```
 
 2. Edit `.env.local` and set your database credentials:
