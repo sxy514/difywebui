@@ -139,35 +139,29 @@ pre .token.variable {
   color: #b5cea8;
 }
 
-/* Enhanced heading styles */
+/* Clean and professional heading styles */
 h1,
 h2,
 h3 {
   font-weight: 700;
-  margin-top: 1.5em;
-  margin-bottom: 0.75em;
-  color: #1a202c;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
+  color: #2563eb;
+  /* 主题蓝色 */
 }
 
 h1 {
-  font-size: 1.8em;
-  border-bottom: 3px solid #3182ce;
-  padding-bottom: 0.3em;
+  font-size: 1.6em;
 }
 
 h2 {
   font-size: 1.5em;
-  border-bottom: 2px solid #63b3ed;
-  padding-bottom: 0.25em;
-  background-color: #f7fafc;
-  padding: 10px 15px;
-  border-radius: 6px;
+  margin-top: 0.5em;
 }
 
 h3 {
   font-size: 1.3em;
-  border-bottom: 1px solid #a0aec0;
-  padding-bottom: 0.2em;
+  margin-top: 0.3em;
 }
 
 /* Table styles */
