@@ -23,6 +23,15 @@
         ]
       }
     ],
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    // 允许jsPDF构造函数使用小写字母开头
+    "new-cap": [
+      "error",
+      {
+        "newIsCap": false,
+        "capIsNew": false,
+        "properties": false
+      }
+    ]
   }
 }

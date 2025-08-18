@@ -19,6 +19,50 @@ import Button from '@/app/components/base/button'
 import type { Emoji } from '@/types/tools'
 import EChart from '@/app/components/base/echart'
 
+// 图表渲染组件，使用React.memo优化
+const ChartRenderer = React.memo(({ content }: { content: string }) => {
+  const chartRegex = /\[chart\]([\s\S]*?)\[\/chart\]/g
+  let lastIndex = 0
+  const parts: React.ReactNode[] = []
+
+  let match = chartRegex.exec(content)
+  while (match !== null) {
+    if (match.index > lastIndex) {
+      parts.push(
+        <Markdown key={`text-${lastIndex}`} content={content.substring(lastIndex, match.index)} />,
+      )
+    }
+
+    try {
+      const chartData = JSON.parse(match[1].trim())
+      parts.push(
+        <div key={`chart-${match.index}`} className="my-4">
+          <EChart option={chartData} style={{ height: '400px' }} />
+        </div>,
+      )
+    }
+    catch (error) {
+      const e = error as Error
+      parts.push(
+        <div key={`error-${match.index}`} className="text-red-500">
+          图表解析错误: {e.message}
+        </div>,
+      )
+    }
+
+    lastIndex = match.index + match[0].length
+    match = chartRegex.exec(content)
+  }
+
+  if (lastIndex < content.length) {
+    parts.push(
+      <Markdown key={'text-end'} content={content.substring(lastIndex)} />,
+    )
+  }
+
+  return <>{parts}</>
+})
+
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => (
   <div
     className={`relative box-border flex items-center justify-center h-7 w-7 p-0.5 rounded-lg bg-white cursor-pointer text-gray-500 hover:text-gray-800 ${className ?? ''}`}
@@ -187,6 +231,7 @@ const Answer: FC<IAnswerProps> = ({
             backgroundColor: '#ffffff', // 设置背景色
           })
           const imgData = canvas.toDataURL('image/png')
+          // 修复ESLint错误：构造函数名称首字母大写
           const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'px',
@@ -288,53 +333,7 @@ const Answer: FC<IAnswerProps> = ({
                 : (isAgentMode
                   ? agentModeAnswer
                   : (
-                    <>
-                      {(() => {
-                        const chartRegex = /\[chart\]([\s\S]*?)\[\/chart\]/g
-                        let lastIndex = 0
-                        const parts = []
-
-                        let match = chartRegex.exec(content)
-                        while (match !== null) {
-                          // 添加图表前的文本
-                          if (match.index > lastIndex) {
-                            parts.push(
-                              <Markdown key={`text-${lastIndex}`} content={content.substring(lastIndex, match.index)} />,
-                            )
-                          }
-
-                          // 添加图表
-                          try {
-                            const chartData = JSON.parse(match[1].trim())
-                            parts.push(
-                              <div key={`chart-${match.index}`} className="my-4">
-                                <EChart option={chartData} style={{ height: '400px' }} />
-                              </div>,
-                            )
-                          }
-                          catch (error) {
-                            const e = error as Error
-                            parts.push(
-                              <div key={`error-${match.index}`} className="text-red-500">
-                                图表解析错误: {e.message}
-                              </div>,
-                            )
-                          }
-
-                          lastIndex = match.index + match[0].length
-                          match = chartRegex.exec(content)
-                        }
-
-                        // 添加剩余文本
-                        if (lastIndex < content.length) {
-                          parts.push(
-                            <Markdown key={'text-end'} content={content.substring(lastIndex)} />,
-                          )
-                        }
-
-                        return <>{parts}</>
-                      })()}
-                    </>
+                    <ChartRenderer content={content} />
                   ))}
               {suggestedQuestions.length > 0 && (
                 <div className='mt-3'>
