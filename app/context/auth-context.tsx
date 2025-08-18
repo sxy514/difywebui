@@ -1,7 +1,7 @@
 'use client'
 import type { ReactNode } from 'react'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 type User = {
     id: string
@@ -22,6 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
     const router = useRouter()
+    const pathname = usePathname()
 
     useEffect(() => {
         // 检查会话状态
@@ -41,8 +42,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         }
 
+        // 如果是登录或注册页面，跳过session检查
+        if (pathname === '/login' || pathname === '/register') {
+            setLoading(false)
+            return
+        }
+
         checkSession()
-    }, [])
+    }, [pathname])
 
     const login = (userData: User) => {
         setUser(userData)
