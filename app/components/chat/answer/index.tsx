@@ -319,7 +319,7 @@ const Answer: FC<IAnswerProps> = ({
           )}
         </div>
         <div className={`${s.answerWrap}`}>
-          <div id={`answer-${id}`} className={`${s.answer} relative text-sm text-gray-900`}>
+          <div id={`answer-${id}`} className={`${s.answer} relative text-sm text-gray-900 min-h-full overflow-y-hidden`}>
             <div className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
               {workflowProcess && (
                 <WorkflowProcess data={workflowProcess} hideInfo />
@@ -347,10 +347,12 @@ const Answer: FC<IAnswerProps> = ({
                 </div>
               )}
             </div>
-            <div className='absolute top-[-14px] right-[-14px] flex flex-row justify-end gap-1'>
-              {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
-              {/* User feedback must be displayed */}
-              {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
+            <div className='flex justify-end mt-3 mb-1 mr-2'>
+              <div className='flex flex-row justify-end gap-2 bg-white bg-opacity-80 rounded-lg p-1 transition-all hover:bg-opacity-100'>
+                {!feedbackDisabled && !item.feedbackDisabled && renderItemOperation()}
+                {/* User feedback must be displayed */}
+                {!feedbackDisabled && renderFeedbackRating(feedback?.rating)}
+              </div>
             </div>
           </div>
         </div>
