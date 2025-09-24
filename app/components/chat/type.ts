@@ -27,6 +27,7 @@ export type MessageMore = {
 }
 
 export type Feedbacktype = {
+  id?: string
   rating: MessageRating
   content?: string | null
 }

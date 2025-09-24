@@ -88,11 +88,13 @@ const Uploader: FC<UploaderProps> = ({
           absolute block inset-0 opacity-0 text-[0] w-full
           ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
         `}
-        onClick={e => (e.target as HTMLInputElement).value = ''}
-        type='file'
-        accept='.png, .jpg, .jpeg, .webp, .gif'
-        onChange={handleChange}
+        type="file"
+        accept="image/*,.png,.jpg,.jpeg,.webp,.gif"
+        title="Upload image"
+        aria-label="Choose an image to upload"
         disabled={disabled}
+        onClick={e => (e.target as HTMLInputElement).value = ''}
+        onChange={handleChange}
       />
     </div>
   )

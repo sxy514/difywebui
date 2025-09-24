@@ -1,12 +1,14 @@
 import React, { useEffect, useRef } from 'react'
-import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+import styles from './style.module.css'
 
 type EChartProps = {
-    option: echarts.EChartsOption
+    option: echarts.EChartsCoreOption
     style?: React.CSSProperties
+    className?: string
 }
 
-const EChart: React.FC<EChartProps> = ({ option, style }) => {
+const EChart: React.FC<EChartProps> = ({ option, style, className = '' }) => {
     const chartRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -24,9 +26,13 @@ const EChart: React.FC<EChartProps> = ({ option, style }) => {
                 formatter: (params: any) => {
                     const [firstParam] = params
                     return `
-            <div style="margin: 0 0 4px 0;font-weight:500">
-              name: ${firstParam.name}<br/>
-              value: ${firstParam.value}
+            <div class="echart-tooltip">
+              <div class="echart-tooltip-header">
+                name: ${firstParam.name}<br/>
+              </div>
+              <div class="echart-tooltip-value">
+                value: ${firstParam.value}
+              </div>
             </div>
           `
                 },
@@ -50,7 +56,12 @@ const EChart: React.FC<EChartProps> = ({ option, style }) => {
     return (
         <div
             ref={chartRef}
-            style={{ width: '100%', height: '400px', ...style }}
+            className={styles.echartContainer}
+            style={{
+                width: '100%',
+                height: '100%',
+                ...style
+            }}
         />
     )
 }

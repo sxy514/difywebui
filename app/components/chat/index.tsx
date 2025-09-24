@@ -134,9 +134,9 @@ const Chat: FC<IChatProps> = ({
   }
 
   return (
-    <div className='h-full w-full px-4'>
-      <div className='h-full w-full flex flex-col max-w-5xl mx-auto'>
-        <div className='flex-1 w-full overflow-y-auto custom-scrollbar py-4 space-y-6'>
+    <div className='h-full w-full px-0'>
+      <div className='h-full w-full flex flex-col'>
+        <div className='flex-1 w-full overflow-y-auto custom-scrollbar py-4 space-y-6 px-4'>
           {chatList.map((item) => {
             if (item.isAnswer) {
               const isLast = item.id === chatList[chatList.length - 1].id
@@ -218,8 +218,8 @@ const Chat: FC<IChatProps> = ({
                       <button
                         className={cn(
                           'flex items-center justify-center h-10 w-10 rounded-lg transition-all duration-200',
-                          !query.trim() 
-                            ? 'text-gray-300 cursor-not-allowed' 
+                          !query.trim()
+                            ? 'text-gray-300 cursor-not-allowed'
                             : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5',
                           isResponding && 'bg-blue-400 cursor-wait'
                         )}
@@ -230,7 +230,7 @@ const Chat: FC<IChatProps> = ({
                           <div className='h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
                         ) : (
                           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.33301 1.3335L7.33301 7.3335M7.33301 7.3335L1.33301 13.3335M7.33301 7.3335L1.33301 7.3335M15.333 7.3335L9.33301 7.3335M9.33301 7.3335L15.333 1.3335M9.33301 7.3335L15.333 13.3335" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M1.33301 1.3335L7.33301 7.3335M7.33301 7.3335L1.33301 13.3335M7.33301 7.3335L1.33301 7.3335M15.333 7.3335L9.33301 7.3335M9.33301 7.3335L15.333 1.3335M9.33301 7.3335L15.333 13.3335" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         )}
                       </button>

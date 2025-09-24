@@ -42,6 +42,8 @@ const FileInput = ({
       accept={accept}
       disabled={!!(fileConfig.number_limits && files.length >= fileConfig?.number_limits)}
       multiple={!!fileConfig.number_limits && fileConfig.number_limits > 1}
+      title='Upload file'
+      aria-label='Choose files to upload'
     />
   )
 }

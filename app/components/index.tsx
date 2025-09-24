@@ -725,7 +725,7 @@ const Main: FC<IMainProps> = () => {
           {hasSetInputs && (
             <div className='flex-1 flex flex-col overflow-hidden'>
               <div className='flex-1 overflow-y-auto' ref={chatListDomRef}>
-                <div className='max-w-4xl mx-auto w-full p-4 h-full flex flex-col'>
+                <div className='w-full mx-auto p-4 h-full flex flex-col'>
                   <Chat
                     chatList={chatList}
                     onSend={handleSend}
