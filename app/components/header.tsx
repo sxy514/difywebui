@@ -4,7 +4,6 @@ import {
   Bars3Icon,
   PencilSquareIcon,
 } from '@heroicons/react/24/solid'
-import AppIcon from '@/app/components/base/app-icon'
 export type IHeaderProps = {
   title: string
   isMobile?: boolean

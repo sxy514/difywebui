@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from 'react'
 import cn from 'classnames'
 import { useTranslation } from 'react-i18next'
 import Textarea from 'rc-textarea'
-import s from './style.module.css'
 import Answer from './answer'
 import Question from './question'
 import type { FeedbackFunc } from './type'
@@ -221,18 +220,20 @@ const Chat: FC<IChatProps> = ({
                           !query.trim()
                             ? 'text-gray-300 cursor-not-allowed'
                             : 'text-white bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5',
-                          isResponding && 'bg-blue-400 cursor-wait'
+                          isResponding && 'bg-blue-400 cursor-wait',
                         )}
                         disabled={!query.trim() || isResponding}
                         onClick={handleSend}
                       >
-                        {isResponding ? (
-                          <div className='h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
-                        ) : (
-                          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.33301 1.3335L7.33301 7.3335M7.33301 7.3335L1.33301 13.3335M7.33301 7.3335L1.33301 7.3335M15.333 7.3335L9.33301 7.3335M9.33301 7.3335L15.333 1.3335M9.33301 7.3335L15.333 13.3335" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        )}
+                        {isResponding
+                          ? (
+                            <div className='h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin'></div>
+                          )
+                          : (
+                            <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M1.33301 1.3335L7.33301 7.3335M7.33301 7.3335L1.33301 13.3335M7.33301 7.3335L1.33301 7.3335M15.333 7.3335L9.33301 7.3335M9.33301 7.3335L15.333 1.3335M9.33301 7.3335L15.333 13.3335" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
                       </button>
                     </Tooltip>
                   </div>

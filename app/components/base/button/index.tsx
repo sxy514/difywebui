@@ -22,13 +22,13 @@ const Button: FC<IButtonProps> = ({
   let style = 'cursor-pointer transition-colors duration-200'
   switch (type) {
     case 'link':
-      style = disabled 
-        ? 'text-blue-300 cursor-not-allowed' 
+      style = disabled
+        ? 'text-blue-300 cursor-not-allowed'
         : 'text-blue-600 hover:text-blue-700 hover:underline'
       break
     case 'primary':
-      style = (disabled || loading) 
-        ? 'bg-blue-400 cursor-not-allowed text-white' 
+      style = (disabled || loading)
+        ? 'bg-blue-400 cursor-not-allowed text-white'
         : 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md'
       break
     default:
