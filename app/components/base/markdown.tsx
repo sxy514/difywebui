@@ -73,11 +73,11 @@ export type MessageFile = {
 }
 
 // Component for rendering think blocks with collapsible functionality
-function ThinkBlock({ children }: { children: React.ReactNode }) {
+function ThinkBlock({ children, className }: { children: React.ReactNode; className?: string }) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   return (
-    <div className="my-2 border-l-4 border-blue-200 bg-blue-50 rounded-r-lg overflow-hidden">
+    <div className={`my-2 border-l-4 border-blue-200 bg-blue-50 rounded-r-lg overflow-hidden ${className || ''}`}>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full text-left p-2 flex items-center gap-2 text-blue-700 hover:bg-blue-100 transition-colors"
@@ -92,7 +92,7 @@ function ThinkBlock({ children }: { children: React.ReactNode }) {
         <span className="text-sm font-medium">Thinking</span>
       </button>
       {isExpanded && (
-        <div className="p-3 text-sm text-gray-700 bg-white">
+        <div className="p-3 text-sm text-gray-700 bg-white prose prose-sm max-w-none">
           {children}
         </div>
       )}
@@ -101,11 +101,11 @@ function ThinkBlock({ children }: { children: React.ReactNode }) {
 }
 
 // Component for rendering the final answer
-function FinalAnswer({ children }: { children: React.ReactNode }) {
+function FinalAnswer({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="my-3 p-3 bg-green-50 border-l-4 border-green-300 rounded-r">
+    <div className={`my-3 p-3 bg-green-50 border-l-4 border-green-300 rounded-r ${className || ''}`}>
       <div className="text-sm font-medium text-green-800 mb-1">Final Answer:</div>
-      <div className="text-gray-800">{children}</div>
+      <div className="text-gray-800 prose prose-sm max-w-none">{children}</div>
     </div>
   )
 }
@@ -170,9 +170,11 @@ function ImageFile({ file }: { file: MessageFile }) {
 export function Markdown({
   content,
   messageFiles = [],
+  className,
 }: {
   content: string
   messageFiles?: MessageFile[]
+  className?: string
 }) {
   // Process content to extract think tags and final answer
   const processContent = (content: string) => {
@@ -187,11 +189,14 @@ export function Markdown({
     // Extract all think blocks
     const thinkRegex = /<think>([\s\S]*?)<\/think>/g
     let match
-    while ((match = thinkRegex.exec(content)) !== null) {
-      thinkBlocks.push(match[1])
-      // Replace the think block with a marker
-      finalAnswer = finalAnswer.replace(match[0], '')
-    }
+    do {
+      match = thinkRegex.exec(content)
+      if (match) {
+        thinkBlocks.push(match[1])
+        // Replace the think block with a marker
+        finalAnswer = finalAnswer.replace(match[0], '')
+      }
+    } while (match)
 
     // Remove empty lines and trim
     finalAnswer = finalAnswer.replace(/^\s*[\r\n]/gm, '').trim()
@@ -254,7 +259,7 @@ export function Markdown({
           </ThinkBlock>
         )}
         {finalAnswer && (
-          <FinalAnswer>
+          <FinalAnswer className="prose prose-sm">
             <ReactMarkdown
               remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
               rehypePlugins={[RehypeKatex]}
@@ -270,14 +275,26 @@ export function Markdown({
                           language={match[1]}
                           style={prism}
                           customStyle={{
-                            background: '#1e1e1e',
-                            fontSize: '1.1em',
+                            background: 'rgb(249 250 251)',
+                            fontSize: '0.875rem',
                             lineHeight: 1.5,
                             margin: 0,
                             padding: '1em',
                             borderRadius: '6px',
-                            overflow: 'auto',
+                            overflowX: 'auto',
+                            overflowY: 'auto',
+                            maxWidth: '100%',
+                            border: '1px solid #e2e8f0',
                           }}
+                          codeTagProps={{
+                            style: {
+                              fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                              background: 'transparent',
+                            },
+                          }}
+                          wrapLines={false}
+                          wrapLongLines={false}
+                          PreTag="div"
                         >
                           {String(children).replace(/\n$/, '')}
                         </SyntaxHighlighter>
@@ -290,6 +307,7 @@ export function Markdown({
                     )
                 },
               }}
+              linkTarget={'_blank'}
             >
               {finalAnswer}
             </ReactMarkdown>
@@ -312,7 +330,7 @@ export function Markdown({
   // If no think tags, render normally
   if (!content.includes('<think>')) {
     return (
-      <div className="markdown-body">
+      <div className={`markdown-body ${className || ''}`}>
         <ReactMarkdown
           remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
           rehypePlugins={[RehypeKatex]}
@@ -329,23 +347,22 @@ export function Markdown({
                       style={prism}
                       showLineNumbers
                       customStyle={{
-                        background: '#ffffff',
+                        background: 'rgb(249 250 251)',
                         color: '#333333',
-                        fontSize: '1.3em',
+                        fontSize: '0.875rem',
                         lineHeight: 1.5,
                         margin: 0,
                         padding: '1em',
                         borderRadius: '6px',
-                        overflowX: 'hidden',
+                        overflowX: 'auto',
                         overflowY: 'auto',
                         maxWidth: '100%',
-                        border: '1px solid #eaeaea',
+                        border: '1px solid #e2e8f0',
                       }}
                       codeTagProps={{
                         style: {
                           fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
                           background: 'transparent',
-                          fontSize: '1.1em !important',
                         },
                       }}
                       wrapLines={false}
@@ -378,7 +395,7 @@ export function Markdown({
   const processedContent = processContent(content)
 
   return (
-    <div className="markdown-body">
+    <div className={`markdown-body ${className || ''}`}>
       {processedContent}
       {allImageFiles.map((file, index) => (
         <ImageFile key={`${file.url}-${index}`} file={file} />

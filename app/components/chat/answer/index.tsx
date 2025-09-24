@@ -8,9 +8,9 @@ import { jsPDF } from 'jspdf'
 import LoadingAnim from '../loading-anim'
 import type { FeedbackFunc } from '../type'
 // Fix CSS module import
-import styles from './style.module.css'
 import ImageGallery from '../../base/image-gallery'
 import Thought from '../thought'
+import styles from './style.module.css'
 import { randomString } from '@/utils/string'
 import type { ChatItem, MessageRating, VisionFile } from '@/types/app'
 import Tooltip from '@/app/components/base/tooltip'
@@ -30,7 +30,7 @@ const ChartRenderer = React.memo(({ content }: { content: string }) => {
   while (match !== null) {
     if (match.index > lastIndex) {
       parts.push(
-        <Markdown key={`text-${lastIndex}`} content={content.substring(lastIndex, match.index)} />,
+        <Markdown key={`text-${lastIndex}`} className="prose prose-sm max-w-none" content={content.substring(lastIndex, match.index)} />,
       )
     }
 
@@ -57,7 +57,7 @@ const ChartRenderer = React.memo(({ content }: { content: string }) => {
 
   if (lastIndex < content.length) {
     parts.push(
-      <Markdown key={'text-end'} content={content.substring(lastIndex)} />,
+      <Markdown key={'text-end'} className="prose prose-sm max-w-none" content={content.substring(lastIndex)} />,
     )
   }
 
@@ -66,9 +66,10 @@ const ChartRenderer = React.memo(({ content }: { content: string }) => {
 
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => {
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onClick) onClick();
-  };
+    e.stopPropagation()
+    if (onClick)
+      onClick()
+  }
 
   return (
     <div
@@ -77,7 +78,7 @@ const OperationBtn = ({ innerContent, onClick, className }: { innerContent: Reac
     >
       {innerContent}
     </div>
-  );
+  )
 }
 
 const OpeningStatementIcon: FC<{ className?: string }> = ({ className }) => (
@@ -149,21 +150,21 @@ const TypingIndicator = () => (
     <div className={styles.typingDot}></div>
     <div className={styles.typingDot}></div>
   </div>
-);
+)
 
 // Bot avatar with pulse animation
 const BotAvatar = ({ isResponding }: { isResponding: boolean }) => (
   <div className={styles.avatarContainer}>
     {isResponding && <div className={styles.avatarPulse}></div>}
     <div className={styles.avatar}>
-      <img 
-        src="/chatbot-avatar.png" 
-        alt="AI Assistant" 
+      <img
+        src="/chatbot-avatar.png"
+        alt="AI Assistant"
         className="w-full h-full object-cover"
       />
     </div>
   </div>
-);
+)
 
 const Answer: FC<IAnswerProps> = ({
   item,
@@ -191,7 +192,7 @@ const Answer: FC<IAnswerProps> = ({
     const hasFeedback = Boolean(feedbackRating)
     const isLike = feedbackRating === 'like'
     const ratingIconClassname = isLike ? 'text-primary-600 bg-primary-100 hover:bg-primary-200' : 'text-red-600 bg-red-100 hover:bg-red-200'
-    
+
     return (
       <Tooltip
         selector={`user-feedback-${randomString(16)}`}
@@ -200,9 +201,8 @@ const Answer: FC<IAnswerProps> = ({
         <div
           className={`${styles.operationBtn} ${!hasFeedback ? 'text-gray-500 hover:text-gray-800' : 'text-blue-500'}`}
           onClick={async () => {
-            if (feedbackId) {
+            if (feedbackId)
               await onFeedback?.(feedbackId, { rating: null })
-            }
           }}
         >
           <div className={`${ratingIconClassname} rounded-lg h-6 w-6 flex items-center justify-center`}>
@@ -218,26 +218,25 @@ const Answer: FC<IAnswerProps> = ({
    * @returns comp
    */
   const renderFeedbackButtons = () => {
-    if (feedback?.rating) {
-      return null;
-    }
-    
+    if (feedback?.rating)
+      return null
+
     return (
       <div className='flex gap-1'>
         <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
-          {OperationBtn({ 
-            innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>, 
-            onClick: () => onFeedback?.(id, { rating: 'like' }) 
+          {OperationBtn({
+            innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>,
+            onClick: () => onFeedback?.(id, { rating: 'like' }),
           })}
         </Tooltip>
         <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
-          {OperationBtn({ 
-            innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>, 
-            onClick: () => onFeedback?.(id, { rating: 'dislike' }) 
+          {OperationBtn({
+            innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>,
+            onClick: () => onFeedback?.(id, { rating: 'dislike' }),
           })}
         </Tooltip>
       </div>
-    );
+    )
   }
 
   const getImgs = (list?: VisionFile[]) => {
@@ -299,7 +298,7 @@ const Answer: FC<IAnswerProps> = ({
       {agent_thoughts?.map((item, index) => (
         <div key={index}>
           {item.thought && (
-            <Markdown content={item.thought} />
+            <Markdown className="prose prose-sm max-w-none" content={item.thought} />
           )}
           {/* {item.tool} */}
           {/* perhaps not use tool */}
@@ -335,8 +334,8 @@ const Answer: FC<IAnswerProps> = ({
         )}
       </div>
       <div className={`${styles.answerWrap}`}>
-        <div id={`answer-${id}`} className={`${styles.answer} relative text-sm text-gray-900 min-h-full overflow-y-hidden`}>
-          <div className={`ml-2 py-3 px-4 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
+        <div id={`answer-${id}`} className={`${styles.answer} relative text-sm text-gray-900 min-h-full overflow-auto`}>
+          <div className={`ml-2 py-4 px-6 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
             {workflowProcess && (
               <WorkflowProcess data={workflowProcess} hideInfo />
             )}
@@ -365,29 +364,31 @@ const Answer: FC<IAnswerProps> = ({
           </div>
           <div className='flex justify-end mt-3 mb-1 mr-2'>
             <div className='flex flex-row justify-end gap-2 bg-white bg-opacity-80 rounded-lg p-1 transition-all hover:bg-opacity-100'>
-            {!feedbackDisabled && !item.feedbackDisabled && (
-              feedback?.rating ? (
-                // Show only the selected feedback button
-                renderFeedbackRating(feedback.rating)
-              ) : (
-                // Show both like/dislike buttons when no feedback given
-                <>
-                  {renderFeedbackButtons()}
-                  <div className='flex gap-1'>
-                    <Tooltip selector={`save-image-${randomString(16)}`} content={'保存为图片'}>
-                      {OperationBtn({ innerContent: <IconWrapper><ImageIcon /></IconWrapper>, onClick: saveAsImage })}
-                    </Tooltip>
-                    <Tooltip selector={`save-pdf-${randomString(16)}`} content={'保存为PDF'}>
-                      {OperationBtn({ innerContent: <IconWrapper><SaveIcon /></IconWrapper>, onClick: saveAsPDF })}
-                    </Tooltip>
-                  </div>
-                </>
-              )
-            )}
-          </div>
-          </div>
+              {!feedbackDisabled && !item.feedbackDisabled && (
+                feedback?.rating
+                  ? (
+                    // Show only the selected feedback button
+                    renderFeedbackRating(feedback.rating)
+                  )
+                  : (
+                    // Show both like/dislike buttons when no feedback given
+                    <>
+                      {renderFeedbackButtons()}
+                      <div className='flex gap-1'>
+                        <Tooltip selector={`save-image-${randomString(16)}`} content={'保存为图片'}>
+                          {OperationBtn({ innerContent: <IconWrapper><ImageIcon /></IconWrapper>, onClick: saveAsImage })}
+                        </Tooltip>
+                        <Tooltip selector={`save-pdf-${randomString(16)}`} content={'保存为PDF'}>
+                          {OperationBtn({ innerContent: <IconWrapper><SaveIcon /></IconWrapper>, onClick: saveAsPDF })}
+                        </Tooltip>
+                      </div>
+                    </>
+                  )
+              )}
+            </div>
           </div>
         </div>
+      </div>
     </div>
   )
 }
