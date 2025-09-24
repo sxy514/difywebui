@@ -375,10 +375,10 @@ const Answer: FC<IAnswerProps> = ({
                     <>
                       {renderFeedbackButtons()}
                       <div className='flex gap-1'>
-                        <Tooltip selector={`save-image-${randomString(16)}`} content={'保存为图片'}>
+                        <Tooltip selector={`save-image-${id}`} content={'保存为图片'}>
                           {OperationBtn({ innerContent: <IconWrapper><ImageIcon /></IconWrapper>, onClick: saveAsImage })}
                         </Tooltip>
-                        <Tooltip selector={`save-pdf-${randomString(16)}`} content={'保存为PDF'}>
+                        <Tooltip selector={`save-pdf-${id}`} content={'保存为PDF'}>
                           {OperationBtn({ innerContent: <IconWrapper><SaveIcon /></IconWrapper>, onClick: saveAsPDF })}
                         </Tooltip>
                       </div>
