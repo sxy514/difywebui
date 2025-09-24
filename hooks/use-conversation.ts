@@ -2,6 +2,8 @@ import { useState } from 'react'
 import produce from 'immer'
 import { useGetState } from 'ahooks'
 import type { ConversationItem } from '@/types/app'
+import { del } from '@/service/base'
+import { APP_ID } from '@/config'
 
 const storageConversationIdKey = 'conversationIdInfo'
 
@@ -47,6 +49,18 @@ function useConversation() {
   const [existConversationInfo, setExistConversationInfo] = useState<ConversationInfoType | null>(null)
   const currConversationInfo = isNewConversation ? newConversationInfo : existConversationInfo
 
+  const deleteConversation = async (id: string) => {
+    try {
+      await del(`/conversations/${id}`)
+      setConversationList(prev => prev.filter(c => c.id !== id))
+      if (currConversationId === id)
+        setCurrConversationId('-1', APP_ID)
+    }
+    catch (e) {
+      console.error('Delete conversation failed:', e)
+    }
+  }
+
   return {
     conversationList,
     setConversationList,
@@ -63,6 +77,7 @@ function useConversation() {
     currConversationInfo,
     setNewConversationInfo,
     setExistConversationInfo,
+    deleteConversation,
   }
 }
 

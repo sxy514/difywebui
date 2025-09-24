@@ -80,6 +80,7 @@ const Main: FC<IMainProps> = () => {
     setCurrInputs,
     setNewConversationInfo,
     setExistConversationInfo,
+    deleteConversation,
   } = useConversation()
 
   const [conversationIdChangeBecauseOfNew, setConversationIdChangeBecauseOfNew, getConversationIdChangeBecauseOfNew] = useGetState(false)
@@ -661,6 +662,7 @@ const Main: FC<IMainProps> = () => {
         list={conversationList}
         onCurrentIdChange={handleConversationIdChange}
         currentId={currConversationId}
+        onDeleteConversation={deleteConversation}
         copyRight={APP_INFO.copyright || APP_INFO.title}
       />
     )
@@ -688,6 +690,7 @@ const Main: FC<IMainProps> = () => {
               copyRight={APP_INFO?.copyright || ''}
               currentId={getCurrConversationId()}
               onCurrentIdChange={handleConversationIdChange}
+              onDeleteConversation={deleteConversation}
               list={conversationList}
             />
           </div>
@@ -701,6 +704,7 @@ const Main: FC<IMainProps> = () => {
                 copyRight={APP_INFO?.copyright || ''}
                 currentId={getCurrConversationId()}
                 onCurrentIdChange={handleConversationIdChange}
+                onDeleteConversation={deleteConversation}
                 list={conversationList}
               />
             </div>

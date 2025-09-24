@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   PencilSquareIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline'
 import { ChatBubbleOvalLeftEllipsisIcon as ChatBubbleOvalLeftEllipsisSolidIcon } from '@heroicons/react/24/solid'
 import Button from '@/app/components/base/button'
@@ -20,6 +21,7 @@ export type ISidebarProps = {
   copyRight: string
   currentId: string
   onCurrentIdChange: (id: string) => void
+  onDeleteConversation?: (id: string) => void
   list: ConversationItem[]
 }
 
@@ -27,6 +29,7 @@ const Sidebar: FC<ISidebarProps> = ({
   copyRight,
   currentId,
   onCurrentIdChange,
+  onDeleteConversation,
   list,
 }) => {
   const { t } = useTranslation()
@@ -41,7 +44,7 @@ const Sidebar: FC<ISidebarProps> = ({
             onClick={() => { onCurrentIdChange('-1') }}
             className="w-full !justify-start !h-10 bg-white hover:bg-gray-100 text-blue-800 items-center text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
           >
-            <PencilSquareIcon className="mr-2 h-4 w-4" /> 
+            <PencilSquareIcon className="mr-2 h-4 w-4" />
             <span className="whitespace-nowrap">{t('app.chat.newChat')}</span>
           </Button>
         )}
@@ -61,7 +64,7 @@ const Sidebar: FC<ISidebarProps> = ({
                   isCurrent
                     ? 'bg-blue-700/80 text-white shadow-md'
                     : 'text-blue-100 hover:bg-blue-700/50',
-                  'group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition-all duration-200 hover:pl-4',
+                  'group relative flex items-center rounded-lg px-3 py-2.5 text-sm font-medium cursor-pointer transition-all duration-200 hover:pl-4',
                 )}
                 title={item.name}
               >
@@ -72,7 +75,20 @@ const Sidebar: FC<ISidebarProps> = ({
                   )}
                   aria-hidden="true"
                 />
-                <span className="truncate">{item.name}</span>
+                <span className="truncate flex-1">{item.name}</span>
+                {onDeleteConversation && item.id !== '-1' && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (confirm(t('common.deleteConfirm') || 'Are you sure to delete this conversation?'))
+                        onDeleteConversation(item.id)
+                    }}
+                    className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-blue-700/50"
+                    title={t('common.delete') || 'Delete'}
+                  >
+                    <TrashIcon className="h-4 w-4 text-blue-300" />
+                  </button>
+                )}
               </div>
             )
           })}
