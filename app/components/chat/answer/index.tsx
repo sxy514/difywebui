@@ -201,8 +201,7 @@ const Answer: FC<IAnswerProps> = ({
         <div
           className={`${styles.operationBtn} ${!hasFeedback ? 'text-gray-500 hover:text-gray-800' : 'text-blue-500'}`}
           onClick={async () => {
-            if (feedbackId)
-              await onFeedback?.(feedbackId, { rating: null })
+            await onFeedback?.(id, { rating: null })
           }}
         >
           <div className={`${ratingIconClassname} rounded-lg h-6 w-6 flex items-center justify-center`}>
@@ -249,11 +248,31 @@ const Answer: FC<IAnswerProps> = ({
   const saveAsImage = async () => {
     const answerElement = document.getElementById(`answer-${id}`)
     if (answerElement) {
+      // 临时隐藏按钮容器
+      const buttonContainer = document.querySelector(`#answer-${id} .flex.justify-end.mt-3.mb-1.mr-2`) as HTMLElement
+      let originalDisplay = ''
+      if (buttonContainer) {
+        originalDisplay = buttonContainer.style.display
+        buttonContainer.style.display = 'none'
+      }
+
       try {
         const canvas = await html2canvas(answerElement, {
-          scale: 2, // 提高图像质量
-          useCORS: true, // 允许跨域图片
-          backgroundColor: '#ffffff', // 设置背景色
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          allowTaint: true,
+          logging: false,
+          onclone: (clonedDoc) => {
+            // 隐藏交互元素如复制按钮
+            clonedDoc.querySelectorAll('.copy-button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+            // 可选：隐藏 ThinkBlock 按钮等
+            clonedDoc.querySelectorAll('.ThinkBlock button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+          },
         })
         const image = canvas.toDataURL('image/png')
         const link = document.createElement('a')
@@ -264,6 +283,11 @@ const Answer: FC<IAnswerProps> = ({
       catch (error) {
         console.error('保存图片失败:', error)
       }
+      finally {
+        // 恢复按钮容器
+        if (buttonContainer)
+          buttonContainer.style.display = originalDisplay || 'flex'
+      }
     }
   }
 
@@ -271,14 +295,33 @@ const Answer: FC<IAnswerProps> = ({
   const saveAsPDF = async () => {
     const answerElement = document.getElementById(`answer-${id}`)
     if (answerElement) {
+      // 临时隐藏按钮容器
+      const buttonContainer = document.querySelector(`#answer-${id} .flex.justify-end.mt-3.mb-1.mr-2`) as HTMLElement
+      let originalDisplay = ''
+      if (buttonContainer) {
+        originalDisplay = buttonContainer.style.display
+        buttonContainer.style.display = 'none'
+      }
+
       try {
         const canvas = await html2canvas(answerElement, {
-          scale: 2, // 提高图像质量
-          useCORS: true, // 允许跨域图片
-          backgroundColor: '#ffffff', // 设置背景色
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          allowTaint: true,
+          logging: false,
+          onclone: (clonedDoc) => {
+            // 隐藏交互元素如复制按钮
+            clonedDoc.querySelectorAll('.copy-button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+            // 可选：隐藏 ThinkBlock 按钮等
+            clonedDoc.querySelectorAll('.ThinkBlock button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+          },
         })
         const imgData = canvas.toDataURL('image/png')
-        // 修复ESLint错误：构造函数名称首字母大写
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'px',
@@ -289,6 +332,11 @@ const Answer: FC<IAnswerProps> = ({
       }
       catch (error) {
         console.error('保存PDF失败:', error)
+      }
+      finally {
+        // 恢复按钮容器
+        if (buttonContainer)
+          buttonContainer.style.display = originalDisplay || 'flex'
       }
     }
   }

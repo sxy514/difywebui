@@ -50,8 +50,8 @@ const CopyButton = ({ content }: { content: string }) => {
 
   return (
     <button
+      className="copy-button absolute right-2 top-2 p-1.5 rounded-md bg-gray-700 bg-opacity-70 text-gray-200 hover:bg-opacity-100 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
       onClick={handleCopy}
-      className="absolute right-2 top-2 p-1.5 rounded-md bg-gray-700 bg-opacity-70 text-gray-200 hover:bg-opacity-100 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
       title="Copy code"
       aria-label="Copy code"
     >
