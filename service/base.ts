@@ -283,28 +283,29 @@ const baseFetch = (url: string, fetchOptions: any, { needAllResponseContent }: I
     }),
     new Promise((resolve, reject) => {
       globalThis.fetch(urlWithPrefix, options)
-        .then((res: any) => {
+        .then(async (res: any) => {
           const resClone = res.clone()
           // Error handler
           if (!/^(2|3)\d{2}$/.test(res.status)) {
+            let errorMessage = 'Server Error'
             try {
-              const bodyJson = res.json()
-              switch (res.status) {
-                case 401: {
-                  Toast.notify({ type: 'error', message: 'Invalid token' })
-                  return
+              const bodyText = await resClone.text()
+              if (bodyText) {
+                const bodyJson = JSON.parse(bodyText)
+                switch (res.status) {
+                  case 401: {
+                    Toast.notify({ type: 'error', message: 'Invalid token' })
+                    return Promise.reject(resClone)
+                  }
+                  default:
+                    errorMessage = bodyJson.message || bodyText
+                    Toast.notify({ type: 'error', message: errorMessage })
                 }
-                default:
-                  // eslint-disable-next-line no-new
-                  new Promise(() => {
-                    bodyJson.then((data: any) => {
-                      Toast.notify({ type: 'error', message: data.message })
-                    })
-                  })
               }
             }
             catch (e) {
-              Toast.notify({ type: 'error', message: `${e}` })
+              // If JSON parse fails or no body, use default message
+              Toast.notify({ type: 'error', message: errorMessage })
             }
 
             return Promise.reject(resClone)
