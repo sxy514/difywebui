@@ -1,29 +1,33 @@
-/* Code block container */
-pre {
-  background-color: #ffffff !important;
+/* Code block container - simplified, no line numbers */
+.syntax-highlighter-wrapper pre {
+  background-color: #f9fafb !important;
   color: #333333 !important;
   border-radius: 6px;
   padding: 1em !important;
-  margin: 0.5em 0;
-  overflow-y: auto;
-  overflow-x: auto !important;
-  font-size: 0.85em;
+  margin: 0;
+  overflow: auto !important;
+  font-size: 0.875rem;
   line-height: 1.5;
   max-width: 100%;
   white-space: pre-wrap;
-  word-wrap: break-word;
   word-break: break-word;
-  border: 1px solid #eaeaea;
 }
 
-/* Line numbers */
+/* Hide line numbers */
 .react-syntax-highlighter-line-number {
-  color: #999999 !important;
-  user-select: none;
-  padding-right: 1em !important;
-  text-align: right;
-  min-width: 2.5em;
-  background-color: #ffffff !important;
+  display: none !important;
+}
+
+/* Code content */
+.syntax-highlighter-wrapper code {
+  background-color: transparent !important;
+  color: inherit !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: block;
+  overflow-x: auto;
+  padding: 0;
 }
 
 /* Code content */
@@ -103,6 +107,12 @@ pre .token.variable {
   background-color: rgba(175, 184, 193, 0.2);
   border-radius: 6px;
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* Copy button styles */
+.copy-button {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 /* Dark theme for code blocks */
@@ -203,30 +213,74 @@ h3 {
 }
 
 /* Table styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1em 0;
+.table-container {
   overflow-x: auto;
-  display: block;
+  margin: 1em 0;
+}
+
+table {
+  width: auto;
+  border-collapse: collapse;
+  table-layout: auto;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
 }
 
 th,
 td {
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
+  vertical-align: middle;
+  text-align: center;
+  min-width: 80px;
+  word-wrap: break-word;
 }
 
 th {
   background-color: #f8fafc;
   font-weight: 600;
-  text-align: left;
+  color: #374151;
 }
 
+td {
+  color: #4b5563;
+}
+
+/* Even rows */
 tr:nth-child(even) {
-  background-color: #f1f5f9;
+  background-color: #f9fafb;
 }
 
+/* Hover effect */
 tr:hover {
-  background-color: #edf2f7;
+  background-color: #f3f4f6;
+}
+
+/* Dark mode support */
+.dark table {
+  background: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark th {
+  background-color: #374151;
+  color: #f9fafb;
+  text-align: center;
+}
+
+.dark td {
+  color: #d1d5db;
+  border-color: #4b5563;
+  text-align: center;
+}
+
+.dark tr:nth-child(even) {
+  background-color: #111827;
+}
+
+.dark tr:hover {
+  background-color: #1f2937;
 }

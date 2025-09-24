@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { prism } from 'react-syntax-highlighter/dist/cjs/styles/prism'
 import 'katex/dist/katex.min.css'
-import { CheckIcon, ChevronDownIcon, ChevronRightIcon, DocumentDuplicateIcon } from '@heroicons/react/24/outline'
+import { CheckIcon, ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import RemarkMath from 'remark-math'
 import RemarkBreaks from 'remark-breaks'
@@ -18,24 +18,20 @@ const CopyButton = ({ content }: { content: string }) => {
 
   const handleCopy = async () => {
     try {
-      // 尝试使用现代 Clipboard API
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(content)
       }
       else {
-        // 回退到旧方法
         const textArea = document.createElement('textarea')
         textArea.value = content
         textArea.style.position = 'fixed'
         document.body.appendChild(textArea)
         textArea.focus()
         textArea.select()
-
         const successful = document.execCommand('copy')
         document.body.removeChild(textArea)
-
         if (!successful)
-          throw new Error('Failed to copy using execCommand')
+          throw new Error('Failed to copy')
       }
 
       setCopied(true)
@@ -50,12 +46,21 @@ const CopyButton = ({ content }: { content: string }) => {
 
   return (
     <button
-      className="copy-button absolute right-2 top-2 p-1.5 rounded-md bg-gray-700 bg-opacity-70 text-gray-200 hover:bg-opacity-100 transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
+      className="simple-button size-medium bg-white border border-gray-300 rounded-md flex items-center gap-1 px-2 py-1 text-sm hover:bg-gray-50 transition-colors text-gray-700"
       onClick={handleCopy}
-      title="Copy code"
-      aria-label="Copy code"
+      title={copied ? '已复制' : '复制代码'}
+      aria-label={copied ? '已复制' : '复制代码'}
     >
-      {copied ? <CheckIcon className="w-4 h-4 text-green-400" /> : <DocumentDuplicateIcon className="w-4 h-4" />}
+      {copied
+        ? (
+          <CheckIcon className="w-4 h-4 text-green-600" />
+        )
+        : (
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 1024 1024" className="iconify">
+            <path d="M427.04896 379.12576a60.2112 60.2112 0 0 0-60.2112 60.2112v315.51488a60.2112 60.2112 0 0 0 60.2112 60.25216h315.51488a60.2112 60.2112 0 0 0 60.25216-60.2112v-315.55584a60.2112 60.2112 0 0 0-60.2112-60.2112H427.008z m-94.74048-34.48832a133.9392 133.9392 0 0 1 94.74048-39.23968h315.51488a133.98016 133.98016 0 0 1 133.98016 133.9392v315.51488a133.9392 133.9392 0 0 1-133.9392 133.98016H427.008a133.9392 133.9392 0 0 1-133.9392-133.9392v-315.55584c0-35.51232 14.09024-69.632 39.23968-94.69952z" fill="currentColor"></path>
+            <path d="M257.14688 233.472a36.16768 36.16768 0 0 0-35.96288 35.96288v364.05248a35.96288 35.96288 0 0 0 18.18624 31.21152 36.864 36.864 0 1 1-36.41344 64.1024A109.64992 109.64992 0 0 1 147.456 633.56928v-364.1344A109.89568 109.89568 0 0 1 257.14688 159.744h364.09344c20.56192 0 38.87104 5.48864 54.51776 16.83456 14.86848 10.77248 24.82176 25.10848 32.31744 38.5024a36.864 36.864 0 0 1-64.47104 35.84c-4.95616-8.97024-8.6016-12.86144-11.14112-14.66368-1.72032-1.2288-4.5056-2.78528-11.22304-2.78528h-364.1344z" fill="currentColor"></path>
+          </svg>
+        )}
     </button>
   )
 }
@@ -215,33 +220,44 @@ export function Markdown({
                       const match = /language-(\w+)/.exec(className || '')
                       return (!inline && match)
                         ? (
-                          <div className="syntax-highlighter-wrapper">
-                            <SyntaxHighlighter
-                              {...props}
-                              language={match[1]}
-                              style={prism}
-                              showLineNumbers
-                              customStyle={{
-                                background: '#1e1e1e',
-                                fontSize: '1.1em',
-                                lineHeight: 1.5,
-                                margin: 0,
-                                padding: '1em',
-                                borderRadius: '6px',
-                                overflow: 'auto',
-                              }}
-                              codeTagProps={{
-                                style: {
-                                  fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                          <div className="segment-code markdown-code">
+                            <header className="segment-code-header" style={{ position: 'sticky', left: 0, top: 0, zIndex: 10, background: 'white' }}>
+                              <div className="segment-code-header-content flex justify-between items-center p-2 border-b border-gray-200">
+                                <span className="segment-code-lang text-xs font-medium text-gray-600 capitalize">{match[1].charAt(0).toUpperCase() + match[1].slice(1)}</span>
+                                <CopyButton content={String(children).replace(/\n$/, '')} />
+                              </div>
+                            </header>
+                            <div className="syntax-highlighter light segment-code-content">
+                              <SyntaxHighlighter
+                                {...props}
+                                className={`language-${match[1]}`}
+                                language={match[1]}
+                                style={prism}
+                                showLineNumbers={false}
+                                customStyle={{
                                   background: 'transparent',
-                                },
-                              }}
-                              wrapLines={false}
-                              wrapLongLines={false}
-                              PreTag="div"
-                            >
-                              {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
+                                  color: '#333333',
+                                  fontSize: '0.875rem',
+                                  lineHeight: 1.5,
+                                  margin: 0,
+                                  padding: 0,
+                                  borderRadius: 0,
+                                  overflow: 'auto',
+                                  maxWidth: '100%',
+                                }}
+                                codeTagProps={{
+                                  style: {
+                                    fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                                    background: 'transparent',
+                                  },
+                                }}
+                                wrapLines={false}
+                                wrapLongLines={false}
+                                PreTag="pre"
+                              >
+                                {String(children).replace(/\n$/, '')}
+                              </SyntaxHighlighter>
+                            </div>
                           </div>
                         )
                         : (
@@ -268,36 +284,44 @@ export function Markdown({
                   const match = /language-(\w+)/.exec(className || '')
                   return (!inline && match)
                     ? (
-                      <div className="syntax-highlighter-wrapper relative group">
-                        <CopyButton content={String(children).replace(/\n$/, '')} />
-                        <SyntaxHighlighter
-                          {...props}
-                          language={match[1]}
-                          style={prism}
-                          customStyle={{
-                            background: 'rgb(249 250 251)',
-                            fontSize: '0.875rem',
-                            lineHeight: 1.5,
-                            margin: 0,
-                            padding: '1em',
-                            borderRadius: '6px',
-                            overflowX: 'auto',
-                            overflowY: 'auto',
-                            maxWidth: '100%',
-                            border: '1px solid #e2e8f0',
-                          }}
-                          codeTagProps={{
-                            style: {
-                              fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                      <div className="segment-code markdown-code">
+                        <header className="segment-code-header" style={{ position: 'sticky', left: 0, top: 0, zIndex: 10, background: 'white' }}>
+                          <div className="segment-code-header-content flex justify-between items-center p-2 border-b border-gray-200">
+                            <span className="segment-code-lang text-xs font-medium text-gray-600 capitalize">{match[1].charAt(0).toUpperCase() + match[1].slice(1)}</span>
+                            <CopyButton content={String(children).replace(/\n$/, '')} />
+                          </div>
+                        </header>
+                        <div className="syntax-highlighter light segment-code-content">
+                          <SyntaxHighlighter
+                            {...props}
+                            className={`language-${match[1]}`}
+                            language={match[1]}
+                            style={prism}
+                            showLineNumbers={false}
+                            customStyle={{
                               background: 'transparent',
-                            },
-                          }}
-                          wrapLines={false}
-                          wrapLongLines={false}
-                          PreTag="div"
-                        >
-                          {String(children).replace(/\n$/, '')}
-                        </SyntaxHighlighter>
+                              color: '#333333',
+                              fontSize: '0.875rem',
+                              lineHeight: 1.5,
+                              margin: 0,
+                              padding: 0,
+                              borderRadius: 0,
+                              overflow: 'auto',
+                              maxWidth: '100%',
+                            }}
+                            codeTagProps={{
+                              style: {
+                                fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                                background: 'transparent',
+                              },
+                            }}
+                            wrapLines={false}
+                            wrapLongLines={false}
+                            PreTag="pre"
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        </div>
                       </div>
                     )
                     : (
@@ -339,38 +363,44 @@ export function Markdown({
               const match = /language-(\w+)/.exec(className || '')
               return (!inline && match)
                 ? (
-                  <div className="syntax-highlighter-wrapper relative group">
-                    <CopyButton content={String(children).replace(/\n$/, '')} />
-                    <SyntaxHighlighter
-                      {...props}
-                      language={match[1]}
-                      style={prism}
-                      showLineNumbers
-                      customStyle={{
-                        background: 'rgb(249 250 251)',
-                        color: '#333333',
-                        fontSize: '0.875rem',
-                        lineHeight: 1.5,
-                        margin: 0,
-                        padding: '1em',
-                        borderRadius: '6px',
-                        overflowX: 'auto',
-                        overflowY: 'auto',
-                        maxWidth: '100%',
-                        border: '1px solid #e2e8f0',
-                      }}
-                      codeTagProps={{
-                        style: {
-                          fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                  <div className="segment-code markdown-code">
+                    <header className="segment-code-header" style={{ position: 'sticky', left: 0, top: 0, zIndex: 10, background: 'white' }}>
+                      <div className="segment-code-header-content flex justify-between items-center p-2 border-b border-gray-200">
+                        <span className="segment-code-lang text-xs font-medium text-gray-600 capitalize">{match[1].charAt(0).toUpperCase() + match[1].slice(1)}</span>
+                        <CopyButton content={String(children).replace(/\n$/, '')} />
+                      </div>
+                    </header>
+                    <div className="syntax-highlighter light segment-code-content">
+                      <SyntaxHighlighter
+                        {...props}
+                        className={`language-${match[1]}`}
+                        language={match[1]}
+                        style={prism}
+                        showLineNumbers={false}
+                        customStyle={{
                           background: 'transparent',
-                        },
-                      }}
-                      wrapLines={false}
-                      wrapLongLines={false}
-                      PreTag="div"
-                    >
-                      {String(children).replace(/\n$/, '')}
-                    </SyntaxHighlighter>
+                          color: '#333333',
+                          fontSize: '0.875rem',
+                          lineHeight: 1.5,
+                          margin: 0,
+                          padding: 0,
+                          borderRadius: 0,
+                          overflow: 'auto',
+                          maxWidth: '100%',
+                        }}
+                        codeTagProps={{
+                          style: {
+                            fontFamily: 'SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace',
+                            background: 'transparent',
+                          },
+                        }}
+                        wrapLines={false}
+                        wrapLongLines={false}
+                        PreTag="pre"
+                      >
+                        {String(children).replace(/\n$/, '')}
+                      </SyntaxHighlighter>
+                    </div>
                   </div>
                 )
                 : (
