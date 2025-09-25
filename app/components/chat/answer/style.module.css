@@ -25,10 +25,12 @@
     transform: scale(0.8);
     opacity: 0.8;
   }
+
   70% {
     transform: scale(1.3);
     opacity: 0;
   }
+
   100% {
     transform: scale(0.8);
     opacity: 0;
@@ -113,8 +115,16 @@
 }
 
 @keyframes typingAnimation {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-5px); }
+
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Message container */
@@ -139,8 +149,15 @@
 
 /* Response animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .answerText {
@@ -177,4 +194,20 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
 }

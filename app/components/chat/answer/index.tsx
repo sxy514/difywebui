@@ -1,7 +1,7 @@
 'use client'
 import type { FC } from 'react'
-import React from 'react'
-import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
+import React, { useState } from 'react'
+import { CheckCircleIcon, DocumentDuplicateIcon, HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
 import { useTranslation } from 'react-i18next'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
@@ -117,6 +117,14 @@ const SaveIcon: FC<{ className?: string }> = ({ className }) => {
   )
 }
 
+const CopyIcon: FC<{ className?: string }> = ({ className }) => (
+  <DocumentDuplicateIcon className={`w-4 h-4 ${className || ''}`} />
+)
+
+const CheckIcon: FC<{ className?: string }> = ({ className }) => (
+  <CheckCircleIcon className={`w-4 h-4 ${className || ''}`} />
+)
+
 const ImageIcon: FC<{ className?: string }> = ({ className }) => {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
@@ -127,8 +135,8 @@ const ImageIcon: FC<{ className?: string }> = ({ className }) => {
   )
 }
 
-const IconWrapper: FC<{ children: React.ReactNode | string }> = ({ children }) => {
-  return <div className={'rounded-lg h-6 w-6 flex items-center justify-center hover:bg-gray-100'}>
+const IconWrapper: FC<{ children: React.ReactNode | string; className?: string }> = ({ children, className }) => {
+  return <div className={`rounded-lg h-6 w-6 flex items-center justify-center hover:bg-gray-100 ${className || ''}`}>
     {children}
   </div>
 }
@@ -178,6 +186,7 @@ const Answer: FC<IAnswerProps> = ({
   const isAgentMode = !!agent_thoughts && agent_thoughts.length > 0
 
   const { t } = useTranslation()
+  const [isCopied, setIsCopied] = useState(false)
 
   /**
  * Render feedback results (distinguish between users and administrators)
@@ -341,6 +350,18 @@ const Answer: FC<IAnswerProps> = ({
     }
   }
 
+  // 复制到剪贴板的函数
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    }
+    catch (error) {
+      console.error('复制失败:', error)
+    }
+  }
+
   const agentModeAnswer = (
     <div>
       {agent_thoughts?.map((item, index) => (
@@ -422,12 +443,16 @@ const Answer: FC<IAnswerProps> = ({
                     // Show both like/dislike buttons when no feedback given
                     <>
                       {renderFeedbackButtons()}
-                      <div className='flex gap-1'>
-                        <Tooltip selector={`save-image-${id}`} content={'保存为图片'}>
-                          {OperationBtn({ innerContent: <IconWrapper><ImageIcon /></IconWrapper>, onClick: saveAsImage })}
-                        </Tooltip>
-                        <Tooltip selector={`save-pdf-${id}`} content={'保存为PDF'}>
-                          {OperationBtn({ innerContent: <IconWrapper><SaveIcon /></IconWrapper>, onClick: saveAsPDF })}
+                      <div className='flex gap-1 items-center'>
+                        <Tooltip selector={`copy-${id}`} content={t('common.operation.copy') || '复制该消息'}>
+                          {OperationBtn({
+                            innerContent: (
+                              <IconWrapper className={isCopied ? 'bg-green-100 text-green-600' : ''}>
+                                {isCopied ? <CheckIcon /> : <CopyIcon />}
+                              </IconWrapper>
+                            ),
+                            onClick: copyToClipboard,
+                          })}
                         </Tooltip>
                       </div>
                     </>

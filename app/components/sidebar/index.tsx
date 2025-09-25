@@ -162,7 +162,7 @@ const Sidebar: FC<ISidebarProps> = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
-                        if (confirm(t('common.deleteConfirm') || 'Are you sure to delete this conversation?'))
+                        if (confirm('你确定要删除这个会话吗?'))
                           onDeleteConversation(item.id)
                       }}
                       className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-blue-700/50"
