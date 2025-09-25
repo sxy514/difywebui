@@ -11,6 +11,8 @@ import RehypeKatex from 'rehype-katex'
 import RemarkGfm from 'remark-gfm'
 import './markdown.css'
 
+import EChart from './echart'
+
 // CopyButton component
 const CopyButton = ({ content }: { content: string }) => {
   const [copied, setCopied] = useState(false)
@@ -361,6 +363,31 @@ export function Markdown({
           components={{
             code({ node, inline, className, children, ...props }) {
               const match = /language-(\w+)/.exec(className || '')
+              if (!inline && match && match[1] === 'json') {
+                try {
+                  const codeContent = String(children).replace(/\n$/, '').trim()
+                  const parsed = JSON.parse(codeContent)
+                  // Check if it's a valid EChart option (has series or xAxis/yAxis)
+                  if (parsed && (parsed.series || (parsed.xAxis && parsed.yAxis))) {
+                    return (
+                      <div className="segment-code markdown-code my-4">
+                        <header className="segment-code-header" style={{ position: 'sticky', left: 0, top: 0, zIndex: 10, background: 'white' }}>
+                          <div className="segment-code-header-content flex justify-between items-center p-2 border-b border-gray-200">
+                            <span className="segment-code-lang text-xs font-medium text-gray-600 capitalize">EChart</span>
+                            <CopyButton content={codeContent} />
+                          </div>
+                        </header>
+                        <div className="echart-container w-full h-96 bg-white rounded-b border border-gray-200">
+                          <EChart option={parsed} style={{ width: '100%', height: '100%' }} />
+                        </div>
+                      </div>
+                    )
+                  }
+                }
+                catch (error) {
+                  // If parsing fails, fallback to syntax highlighting
+                }
+              }
               return (!inline && match)
                 ? (
                   <div className="segment-code markdown-code">

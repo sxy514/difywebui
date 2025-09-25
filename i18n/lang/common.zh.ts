@@ -21,6 +21,10 @@ const translation = {
     ok: '好的',
     deleteConfirm: '确认删除？',
   },
+  chart: {
+    name: '名称',
+    value: '值',
+  },
   imageUploader: {
     uploadFromComputer: '从本地上传',
     uploadFromComputerReadError: '图片读取失败，请重新选择。',
