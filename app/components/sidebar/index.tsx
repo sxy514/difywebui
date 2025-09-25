@@ -128,12 +128,12 @@ const Sidebar: FC<ISidebarProps> = ({
       </div>
       <div className="history-part flex-1 overflow-y-auto custom-scrollbar">
         <div className="nav-title p-4 border-b border-blue-700/50">
-          <div className="title-label flex items-center text-sm font-medium">
+          <div className="title-label flex items-center text-sm font-medium pl-3">
             <ClockIcon className="mr-2 h-5 w-5" />
             <span>{'历史会话'}</span>
           </div>
         </div>
-        <ul className="p-2 space-y-1">
+        <ul className="p-4 space-y-1">
           {list.map((item) => {
             const isCurrent = item.id === currentId
             const ItemIcon = isCurrent ? ChatBubbleOvalLeftEllipsisSolidIcon : ChatBubbleOvalLeftEllipsisIcon
@@ -179,9 +179,6 @@ const Sidebar: FC<ISidebarProps> = ({
             )
           })}
         </ul>
-        <a href="/chat/history" className="nav-item more-history block p-4 text-center text-sm text-blue-300 hover:text-white hover:bg-blue-700/30 rounded-lg transition-all m-2">
-          <span>查看全部</span>
-        </a>
       </div>
       <div className="sidebar-footer p-4 border-t border-blue-700/50">
         <ul className="user-nav space-y-2 text-sm mb-4" style={{ display: 'none' }}>

@@ -135,7 +135,7 @@ const Chat: FC<IChatProps> = ({
   return (
     <div className='h-full w-full px-0'>
       <div className='h-full w-full flex flex-col'>
-        <div className='flex-1 w-full overflow-y-auto custom-scrollbar py-4 space-y-6 px-4'>
+        <div className='flex-1 w-full py-4 space-y-6 px-4'>
           {chatList.map((item) => {
             if (item.isAnswer) {
               const isLast = item.id === chatList[chatList.length - 1].id
@@ -162,7 +162,7 @@ const Chat: FC<IChatProps> = ({
           })}
         </div>
         {!isHideSendInput && (
-          <div className={cn('sticky bottom-0 bg-gradient-to-t from-white to-white/80 backdrop-blur-sm pt-4 pb-6', !feedbackDisabled && 'px-1')}>
+          <div className={cn('sticky bottom-0 bg-gradient-to-t from-white to-white/80 backdrop-blur-sm pt-4 pb-6 relative z-20', !feedbackDisabled && 'px-1')}>
             <div className='relative max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl'>
               <div className='absolute inset-0 bg-gradient-to-r from-blue-50 to-white opacity-30'></div>
               {visionConfig?.enabled && (

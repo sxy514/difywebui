@@ -404,7 +404,7 @@ const Answer: FC<IAnswerProps> = ({
       </div>
       <div className={`${styles.answerWrap}`}>
         <div id={`answer-${id}`} className={`${styles.answer} relative text-sm text-gray-900 min-h-full overflow-auto`}>
-          <div className={`ml-2 py-4 px-6 bg-gray-100 rounded-tr-2xl rounded-b-2xl ${workflowProcess && 'min-w-[480px]'}`}>
+          <div className={`ml-2 py-4 px-6 bg-gray-100 rounded-tr-2xl rounded-b-2xl relative z-1 ${workflowProcess && 'min-w-[480px]'}`}>
             {workflowProcess && (
               <WorkflowProcess data={workflowProcess} hideInfo />
             )}
