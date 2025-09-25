@@ -66,12 +66,35 @@ type EChartProps = {
 const EChart: React.FC<EChartProps> = ({ option, style, className = '' }) => {
   const { t } = useTranslation()
   const chartRef = useRef<HTMLDivElement>(null)
+  const echartInstance = useRef<echarts.ECharts | null>(null)
 
   const hasPie = React.useMemo(() => {
-    return option.series?.some((s: any) => s.type === 'pie')
+    return Array.isArray(option.series) && option.series.some((s: any) => s.type === 'pie')
   }, [option])
 
-  const tooltipFormatter = (params: any) => {
+  const cleanedOption = React.useMemo(() => {
+    const opt = { ...option }
+    if (hasPie) {
+      // 对于 pie chart，移除坐标系配置
+      delete opt.xAxis
+      delete opt.yAxis
+      // 确保 series data 有效，并修复无效 emphasis
+      if (Array.isArray(opt.series)) {
+        opt.series = opt.series.map((s: any) => {
+          const cleanedS = { ...s }
+          if (s.emphasis === 'max') {
+            // 移除无效 emphasis 'max' for pie
+            delete cleanedS.emphasis
+          }
+          cleanedS.data = Array.isArray(s.data) ? s.data.filter((d: any) => typeof d === 'object' && d !== null && typeof d.value === 'number' && typeof d.name === 'string') : []
+          return cleanedS
+        })
+      }
+    }
+    return opt
+  }, [option, hasPie])
+
+  const tooltipFormatter = React.useCallback((params: any) => {
     let html = '<div class="echart-tooltip">'
     if (Array.isArray(params) && params.length > 0) {
       // axis trigger, 多series
@@ -100,30 +123,49 @@ const EChart: React.FC<EChartProps> = ({ option, style, className = '' }) => {
     }
     html += '</div>'
     return html
-  }
+  }, [t])
 
   useEffect(() => {
     if (!chartRef.current)
       return
 
-    const chart = echarts.init(chartRef.current)
-    chart.setOption({
-      ...option,
-      tooltip: {
-        ...option.tooltip,
-        trigger: hasPie ? 'item' : 'axis',
-        axisPointer: {
-          type: 'shadow',
-        },
-        formatter: tooltipFormatter,
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        borderColor: '#eee',
-        textStyle: {
-          color: '#333',
-        },
-      },
-    })
-    chart.resize() // 确保初始尺寸正确
+    // 初始化 chart 实例（仅首次）
+    if (!echartInstance.current)
+      echartInstance.current = echarts.init(chartRef.current)
+
+    const chart = echartInstance.current
+
+    // 安全检查：确保 cleanedOption 有效
+    if (typeof cleanedOption === 'object' && cleanedOption !== null && Array.isArray(cleanedOption.series) && cleanedOption.series.every((s: any) => typeof s === 'object' && s !== null && typeof s.type === 'string')) {
+      try {
+        chart.setOption({
+          ...cleanedOption,
+          tooltip: {
+            ...(cleanedOption.tooltip || {}),
+            trigger: hasPie ? 'item' : 'axis',
+            axisPointer: {
+              type: 'shadow',
+            },
+            formatter: tooltipFormatter,
+            backgroundColor: 'rgba(255,255,255,0.9)',
+            borderColor: '#eee',
+            textStyle: {
+              color: '#333',
+            },
+          },
+        })
+        chart.resize()
+      }
+      catch (error) {
+        console.error('ECharts setOption 失败:', error)
+        // 可选：设置默认空 option
+        chart.setOption({})
+      }
+    }
+    else {
+      // 如果无效，设置空 option 或跳过
+      console.warn('无效的 ECharts option，跳过 setOption')
+    }
 
     const handleResize = () => chart.resize()
     window.addEventListener('resize', handleResize)
@@ -136,9 +178,18 @@ const EChart: React.FC<EChartProps> = ({ option, style, className = '' }) => {
     return () => {
       window.removeEventListener('resize', handleResize)
       resizeObserver.disconnect()
-      chart.dispose()
+      // 不 dispose，除非组件卸载
     }
-  }, [option, hasPie, tooltipFormatter])
+  }, [cleanedOption, hasPie, tooltipFormatter])
+
+  useEffect(() => {
+    return () => {
+      if (echartInstance.current) {
+        echartInstance.current.dispose()
+        echartInstance.current = null
+      }
+    }
+  }, [])
 
   return (
     <div

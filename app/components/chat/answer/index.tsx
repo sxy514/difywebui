@@ -23,45 +23,57 @@ import EChart from '@/app/components/base/echart'
 // 图表渲染组件，使用React.memo优化
 const ChartRenderer = React.memo(({ content }: { content: string }) => {
   const chartRegex = /\[chart\]([\s\S]*?)\[\/chart\]/g
-  let lastIndex = 0
-  const parts: React.ReactNode[] = []
 
-  let match = chartRegex.exec(content)
-  while (match !== null) {
-    if (match.index > lastIndex) {
+  const parsedParts = React.useMemo(() => {
+    const parts: React.ReactNode[] = []
+    let lastIndex = 0
+    let match = chartRegex.exec(content)
+
+    while (match !== null) {
+      if (match.index > lastIndex) {
+        parts.push(
+          <Markdown key={`text-${lastIndex}`} className="prose prose-sm max-w-none" content={content.substring(lastIndex, match.index)} />,
+        )
+      }
+
+      try {
+        const chartData = JSON.parse(match[1].trim())
+        // 验证 chartData 为有效对象且有 series，每个 series 元素为对象且有 type
+        if (typeof chartData === 'object' && chartData !== null && Array.isArray(chartData.series) && chartData.series.every((s: any) => typeof s === 'object' && s !== null && typeof s.type === 'string')) {
+          // 使用稳定的 key 基于 match.index，确保 React 复用组件
+          parts.push(
+            <div key={`chart-${match.index}`} className={styles.chartContainer}>
+              <EChart option={chartData} style={{ width: '100%', height: '100%' }} />
+            </div>,
+          )
+        }
+        else {
+          throw new Error('无效的图表配置：series 无效或缺少 type')
+        }
+      }
+      catch (error) {
+        const e = error as Error
+        parts.push(
+          <div key={`error-${match.index}`} className="text-red-500">
+            图表解析错误: {e.message}
+          </div>,
+        )
+      }
+
+      lastIndex = match.index + match[0].length
+      match = chartRegex.exec(content)
+    }
+
+    if (lastIndex < content.length) {
       parts.push(
-        <Markdown key={`text-${lastIndex}`} className="prose prose-sm max-w-none" content={content.substring(lastIndex, match.index)} />,
+        <Markdown key={`text-end-${lastIndex}`} className="prose prose-sm max-w-none" content={content.substring(lastIndex)} />,
       )
     }
 
-    try {
-      const chartData = JSON.parse(match[1].trim())
-      parts.push(
-        <div key={`chart-${match.index}`} className={styles.chartContainer}>
-          <EChart option={chartData} style={{ width: '100%', height: '100%' }} />
-        </div>,
-      )
-    }
-    catch (error) {
-      const e = error as Error
-      parts.push(
-        <div key={`error-${match.index}`} className="text-red-500">
-          图表解析错误: {e.message}
-        </div>,
-      )
-    }
+    return parts
+  }, [content])
 
-    lastIndex = match.index + match[0].length
-    match = chartRegex.exec(content)
-  }
-
-  if (lastIndex < content.length) {
-    parts.push(
-      <Markdown key={'text-end'} className="prose prose-sm max-w-none" content={content.substring(lastIndex)} />,
-    )
-  }
-
-  return <>{parts}</>
+  return <>{parsedParts}</>
 })
 
 const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => {
