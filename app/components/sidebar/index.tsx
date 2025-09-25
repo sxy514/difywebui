@@ -43,7 +43,7 @@ const Sidebar: FC<ISidebarProps> = ({
       className="shrink-0 flex flex-col h-full bg-gradient-to-b from-blue-800 to-blue-900 text-white w-72 border-r border-blue-700/50"
     >
       <div className="sidebar-header p-4 border-b border-blue-700/50 flex-shrink-0 flex items-center justify-between">
-        <a href="/" className="logo">
+        <a href="#" className="logo">
           <ChatBubbleOvalLeftEllipsisIcon className="h-8 w-8 text-white" />
         </a>
         <div className="expand-btn">
@@ -67,13 +67,13 @@ const Sidebar: FC<ISidebarProps> = ({
         </a>
       </div>
       <div className="kimi-plus-part p-4 border-b border-blue-700/50">
-        <a href="/kimiplus-square" className="nav-item kimi-plus-square flex items-center text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 p-3 transition-all duration-200">
+        <a href="#" className="nav-item kimi-plus-square flex items-center text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 p-3 transition-all duration-200">
           <StarIcon className="mr-2 h-4 w-4 text-yellow-300" />
           <span>App Market+</span>
         </a>
         <ul className="mt-3 space-y-2">
           <li>
-            <a href="/kimiplus/conph28t7lagf3d1bhq0" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
               <div className="kimi-plus-info flex items-center">
                 <div className="kimi-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/academic.png" alt="学术搜索" className="w-8 h-8 rounded-full" />
@@ -86,7 +86,7 @@ const Sidebar: FC<ISidebarProps> = ({
             </a>
           </li>
           <li>
-            <a href="/kimiplus/conph6gt7lagfi80vfrg" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
               <div className="kimi-plus-info flex items-center">
                 <div className="kimi-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/translate.png" alt="翻译通" className="w-8 h-8 rounded-full" />
@@ -99,7 +99,7 @@ const Sidebar: FC<ISidebarProps> = ({
             </a>
           </li>
           <li>
-            <a href="/kimiplus/cu52bqh7l5gqdkncdg01" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
               <div className="kimi-plus-info flex items-center">
                 <div className="kimi-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/medical-search.png" alt="医疗搜索" className="w-8 h-8 rounded-full" />
@@ -112,7 +112,7 @@ const Sidebar: FC<ISidebarProps> = ({
             </a>
           </li>
           <li>
-            <a href="/kimiplus/slides" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
               <div className="kimi-plus-info flex items-center">
                 <div className="kimi-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/新PPT助手.png" alt="PPT 助手" className="w-8 h-8 rounded-full" />
