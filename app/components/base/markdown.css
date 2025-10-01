@@ -1,0 +1,286 @@
+/* Code block container - simplified, no line numbers */
+.syntax-highlighter-wrapper pre {
+  background-color: #f9fafb !important;
+  color: #333333 !important;
+  border-radius: 6px;
+  padding: 1em !important;
+  margin: 0;
+  overflow: auto !important;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  max-width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Hide line numbers */
+.react-syntax-highlighter-line-number {
+  display: none !important;
+}
+
+/* Code content */
+.syntax-highlighter-wrapper code {
+  background-color: transparent !important;
+  color: inherit !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+}
+
+/* Code content */
+pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  display: block;
+  overflow-x: auto;
+  padding: 0 0.5em;
+}
+
+/* Syntax highlighting */
+pre .token.comment,
+pre .token.prolog,
+pre .token.doctype,
+pre .token.cdata {
+  color: #5c6370;
+  font-style: italic;
+}
+
+pre .token.punctuation {
+  color: #abb2bf;
+}
+
+pre .token.property,
+pre .token.tag,
+pre .token.boolean,
+pre .token.number,
+pre .token.constant,
+pre .token.symbol,
+pre .token.deleted {
+  color: #d19a66;
+}
+
+pre .token.selector,
+pre .token.attr-name,
+pre .token.string,
+pre .token.char,
+pre .token.builtin,
+pre .token.inserted {
+  color: #98c379;
+}
+
+pre .token.operator,
+pre .token.entity,
+pre .token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #56b6c2;
+}
+
+pre .token.atrule,
+pre .token.attr-value,
+pre .token.keyword {
+  color: #c678dd;
+}
+
+pre .token.function,
+pre .token.class-name {
+  color: #61afef;
+}
+
+pre .token.regex,
+pre .token.important,
+pre .token.variable {
+  color: #e06c75;
+}
+
+/* Inline code */
+:not(pre)>code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(175, 184, 193, 0.2);
+  border-radius: 6px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* Copy button styles */
+.copy-button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Dark theme for code blocks */
+.dark pre {
+  background-color: #1e1e1e !important;
+  color: #d4d4d4 !important;
+}
+
+.dark pre .token.comment,
+.dark pre .token.prolog,
+.dark pre .token.doctype,
+.dark pre .token.cdata {
+  color: #6a9955;
+}
+
+.dark pre .token.punctuation {
+  color: #d4d4d4;
+}
+
+.dark pre .token.keyword {
+  color: #569cd6;
+}
+
+.dark pre .token.operator,
+.dark pre .token.string {
+  color: #ce9178;
+}
+
+.dark pre .token.function {
+  color: #dcdcaa;
+}
+
+.dark pre .token.number {
+  color: #b5cea8;
+}
+
+/* Clean and professional heading styles */
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  margin-top: 1em;
+  margin-bottom: 0.6em;
+  color: #2563eb;
+  /* 主题蓝色 */
+}
+
+/* Compact prose spacing for chat UI */
+.prose p {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose blockquote {
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1rem;
+}
+
+h1 {
+  font-size: 1.4em;
+}
+
+h2 {
+  font-size: 1.3em;
+  margin-top: 0.5em;
+}
+
+h3 {
+  font-size: 1.2em;
+  margin-top: 0.3em;
+}
+
+/* Table styles */
+.table-container {
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+table {
+  width: auto;
+  border-collapse: collapse;
+  table-layout: auto;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+}
+
+th,
+td {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  vertical-align: middle;
+  text-align: center;
+  min-width: 80px;
+  word-wrap: break-word;
+}
+
+th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+}
+
+td {
+  color: #4b5563;
+}
+
+/* Even rows */
+tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Hover effect */
+tr:hover {
+  background-color: #f3f4f6;
+}
+
+/* Dark mode support */
+.dark table {
+  background: #1f2937;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark th {
+  background-color: #374151;
+  color: #f9fafb;
+  text-align: center;
+}
+
+.dark td {
+  color: #d1d5db;
+  border-color: #4b5563;
+  text-align: center;
+}
+
+.dark tr:nth-child(even) {
+  background-color: #111827;
+}
+
+.dark tr:hover {
+  background-color: #1f2937;
+}

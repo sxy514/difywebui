@@ -1,0 +1,483 @@
+'use client'
+import type { FC } from 'react'
+import React, { useState } from 'react'
+import { CheckCircleIcon, DocumentDuplicateIcon, HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
+import { useTranslation } from 'react-i18next'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
+import LoadingAnim from '../loading-anim'
+import type { FeedbackFunc } from '../type'
+// Fix CSS module import
+import ImageGallery from '../../base/image-gallery'
+import Thought from '../thought'
+import styles from './style.module.css'
+import { randomString } from '@/utils/string'
+import type { ChatItem, MessageRating, VisionFile } from '@/types/app'
+import Tooltip from '@/app/components/base/tooltip'
+import WorkflowProcess from '@/app/components/workflow/workflow-process'
+import { Markdown } from '@/app/components/base/markdown'
+import Button from '@/app/components/base/button'
+import type { Emoji } from '@/types/tools'
+import EChart from '@/app/components/base/echart'
+
+// 图表渲染组件，使用React.memo优化
+const ChartRenderer = React.memo(({ content }: { content: string }) => {
+  const chartRegex = /\[chart\]([\s\S]*?)\[\/chart\]/g
+
+  const parsedParts = React.useMemo(() => {
+    const parts: React.ReactNode[] = []
+    let lastIndex = 0
+    let match = chartRegex.exec(content)
+
+    while (match !== null) {
+      if (match.index > lastIndex) {
+        parts.push(
+          <Markdown key={`text-${lastIndex}`} className="prose prose-sm max-w-none" content={content.substring(lastIndex, match.index)} />,
+        )
+      }
+
+      try {
+        const chartData = JSON.parse(match[1].trim())
+        // 验证 chartData 为有效对象且有 series，每个 series 元素为对象且有 type
+        if (typeof chartData === 'object' && chartData !== null && Array.isArray(chartData.series) && chartData.series.every((s: any) => typeof s === 'object' && s !== null && typeof s.type === 'string')) {
+          // 使用稳定的 key 基于 match.index，确保 React 复用组件
+          parts.push(
+            <div key={`chart-${match.index}`} className={styles.chartContainer}>
+              <EChart option={chartData} style={{ width: '100%', height: '100%' }} />
+            </div>,
+          )
+        }
+        else {
+          throw new Error('无效的图表配置：series 无效或缺少 type')
+        }
+      }
+      catch (error) {
+        const e = error as Error
+        parts.push(
+          <div key={`error-${match.index}`} className="text-red-500">
+            图表解析错误: {e.message}
+          </div>,
+        )
+      }
+
+      lastIndex = match.index + match[0].length
+      match = chartRegex.exec(content)
+    }
+
+    if (lastIndex < content.length) {
+      parts.push(
+        <Markdown key={`text-end-${lastIndex}`} className="prose prose-sm max-w-none" content={content.substring(lastIndex)} />,
+      )
+    }
+
+    return parts
+  }, [content])
+
+  return <>{parsedParts}</>
+})
+
+const OperationBtn = ({ innerContent, onClick, className }: { innerContent: React.ReactNode; onClick?: () => void; className?: string }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (onClick)
+      onClick()
+  }
+
+  return (
+    <div
+      className={`${styles.operationBtn} ${className || ''}`}
+      onClick={handleClick}
+    >
+      {innerContent}
+    </div>
+  )
+}
+
+const OpeningStatementIcon: FC<{ className?: string }> = ({ className }) => (
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fillRule="evenodd" clipRule="evenodd" d="M6.25002 1C3.62667 1 1.50002 3.12665 1.50002 5.75C1.50002 6.28 1.58702 6.79071 1.7479 7.26801C1.7762 7.35196 1.79285 7.40164 1.80368 7.43828L1.80722 7.45061L1.80535 7.45452C1.79249 7.48102 1.77339 7.51661 1.73766 7.58274L0.911727 9.11152C0.860537 9.20622 0.807123 9.30503 0.770392 9.39095C0.733879 9.47635 0.674738 9.63304 0.703838 9.81878C0.737949 10.0365 0.866092 10.2282 1.05423 10.343C1.21474 10.4409 1.38213 10.446极 1.475 10.4451C1.56844 10.444 1.68015 10.4324 1.78723 10.4213L4.36472 10.1549C4.406 10.1506 4.42758 10.1484 4.44339 10.1472L4.44542 10.147L4.45161 10.1492C4.47103 10.1562 4.49738 10.1663 4.54285 10.1838C5.07332 10.3882 5.64921 10.5 6.25002 10.5C8.87338 10.5 11 8.37335 11 5.75C11 3.12665 8.87338 1 6.25002 1ZM4.48481 4.29111C5.04844 3.81548 5.7986 3.9552 6.24846 4.47463C6.69831 3.9552 7.43879 3.82048 8.01211 4.29111C8.58544 4.76175 8.6551 5.562 8.21247 6.12453C7.93825 6.47305 7.24997 7.10957 6.76594 7.54348C6.58814 7.70286 6.49924 7.78255 6.39255 7.81466C6.30103 7.84221 6.19589 7.84221 6.10436 7.81466C5.99767 7.78255 5.90878 7.70286 5.73098 7.54348C5.24694 7.10957 4.55867 6.47305 4.28444 6.12453C3.84182 5.562 3.92117 4.76675 4.48481 4.29111Z" fill="#667085" />
+  </svg>
+)
+
+const RatingIcon: FC<{ isLike: boolean }> = ({ isLike }) => {
+  return isLike ? <HandThumbUpIcon className='w-4 h-4' /> : <HandThumbDownIcon className='w-4 h-4' />
+}
+
+const EditIcon: FC<{ className?: string }> = ({ className }) => {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M14 11.9998L13.3332 12.7292C12.9796 13.1159 12.5001 13.3332 12.0001 13.3332C11.5001 13.3332 11.0205 13.1159 10.6669 12.7292C10.3128 12.3432 9.83332 12.1265 9.33345 12.1265C8.83359 12.1265 8.35409 12.3432 7.99998 12.7292M2 13.3332H3.11636C3.44248 13.3332 3.60554 13.3332 3.75899 13.2963C3.89504 13.2637 4.0251 13.2098 4.1444 13.1367C4.27895 13.0542 4.39425 12.9389 4.62486 12.7083L13 4.33316C13.5523 3.78087 13.5523 2.88544 13 2.33316C12.4477 1.78087 11.5523 1.78087 11 2.33316L2.62484 10.7083C2.39424 10.9389 2.27894 11.0542 2.19648 11.1888C2.12338 11.3081 2.0695 11.4381 2.03684 11.5742C2 11.7276 2 11.8907 2 12.2168V13.3332Z" stroke="#6B7280" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export const EditIconSolid: FC<{ className?: string }> = ({ className }) => {
+  return <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <path fillRule="evenodd" clipRule="evenodd" d="M10.8374 8.63108C11.0412 8.81739 11.0554 9.13366 10.8691 9.33747L10.369 9.88449C10.0142 10.2725 9.52293 10.5001 9.00011 10.5001C8.47746 10.5001 7.98634 10.2727 7.63157 9.8849C7.45561 9.69325 7.22747 9.59515 7.00014 9.59515C6.77271 9.59515 6.54446 9.69335 6.36846 9.88517C6.18177 10.0886 5.86548 10.1023 5.66201 9.91556C5.45853 9.72888 5.44493 9.41259 5.63161 9.20911C5.98678 8.82201 6.47777 8.59515 7.000极 8.59515C7.52251 8.59515 8.0135 8.82201 8.36867 9.20911L8.36924 9.20974C8.54486 9.4018 8.77291 9.50012 9.00011 9.50012C9.2273 9.50012 9.45533 9.40182 9.63095 9.20979L10.131 8.66276C10.3173 8.45895 10.6336 8.44476 10.8374 8.63108Z" fill="#6B7280" />
+    <path fillRule="evenodd" clipRule="evenodd" d="M7.89651 1.39656C8.50599 0.787085 9.49414 0.787084 10.1036 1.39656C10.7131 2.00604 10.7131 2.99419 10.1036 3.60367L3.82225 9.88504C3.81235 9.89494 3.80254 9.90476 3.79281 9.91451C3.64909 10.0585 3.52237 10.1855 3.3696 10.2791C3.23539 10.3613 3.08907 10.4219 2.93602 10.4587C2.7618 10.5005 2.58242 10.5003 2.37897 10.5001C2.3652 10.5001 2.35132 10.5001 2.33732 10.5001H1.50005C1.22391 10.5001 1.00005 10.2763 1.00005 10.0001V9.16286C1.00005 9.14886 1.00004 9.13497 1.00003 9.1212C0.999836 8.91776 0.999669 8.73838 1.0415 8.56416C1.07824 8.4111 1.13885 8.26479 1.22109 8.13058C1.31471 7.97781 1.44166 7.85109 1.58566 7.70736C1.5954 7.69764 1.60523 7.68783 1.61513 7.67793L7.89651 1.39656Z" fill="#6B7280" />
+  </svg>
+}
+
+const SaveIcon: FC<{ className?: string }> = ({ className }) => {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M13.3334 14H2.66671C2.30271 14 2.00004 13.7022 2.00004 13.3333V2.66667C2.00004 2.29778 2.30271 2 2.66671 2H11.3334L14 4.66667V13.3333C14 13.7022 13.7023 14 13.3334 14Z" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 2V5.33333C10 5.70222 10.2978 6 10.6667 6H14" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M8 10.6667V5.33333" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.33337 10.6667H10.6667" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const CopyIcon: FC<{ className?: string }> = ({ className }) => (
+  <DocumentDuplicateIcon className={`w-4 h-4 ${className || ''}`} />
+)
+
+const CheckIcon: FC<{ className?: string }> = ({ className }) => (
+  <CheckCircleIcon className={`w-4 h-4 ${className || ''}`} />
+)
+
+const ImageIcon: FC<{ className?: string }> = ({ className }) => {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <path d="M14 11.3333V4.66667C14 4.29848 13.7016 4 13.3333 4H2.66667C2.29848 4 2 4.29848 2 4.66667V11.3333C2 11.7015 2.29848 12 2.66667 12H13.3333C13.7016 12 14 11.7015 14 11.3333Z" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.33337 7.33333C5.9777 7.33333 6.50004 6.81099 6.50004 6.16667C6.50004 5.52234 5.9777 5 5.33337 5C4.68904 5 4.16671 5.52234 4.16671 6.16667C4.16671 6.81099 4.68904 7.33333 5.33337 7.33333Z" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 9.33333L11.3333 6.66667L2 12" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const IconWrapper: FC<{ children: React.ReactNode | string; className?: string }> = ({ children, className }) => {
+  return <div className={`rounded-lg h-6 w-6 flex items-center justify-center hover:bg-gray-100 ${className || ''}`}>
+    {children}
+  </div>
+}
+
+type IAnswerProps = {
+  item: ChatItem
+  feedbackDisabled: boolean
+  onFeedback?: FeedbackFunc
+  isResponding?: boolean
+  allToolIcons?: Record<string, string | Emoji>
+  suggestionClick?: (suggestion: string) => void
+}
+
+// The component needs to maintain its own state to control whether to display input component
+// Typing indicator component
+const TypingIndicator = () => (
+  <div className={styles.typingIndicator}>
+    <div className={styles.typingDot}></div>
+    <div className={styles.typingDot}></div>
+    <div className={styles.typingDot}></div>
+  </div>
+)
+
+// Bot avatar with pulse animation
+const BotAvatar = ({ isResponding }: { isResponding: boolean }) => (
+  <div className={styles.avatarContainer}>
+    {isResponding && <div className={styles.avatarPulse}></div>}
+    <div className={styles.avatar}>
+      <img
+        src="/chatbot-avatar.png"
+        alt="AI Assistant"
+        className="w-full h-full object-cover"
+      />
+    </div>
+  </div>
+)
+
+const Answer: FC<IAnswerProps> = ({
+  item,
+  feedbackDisabled = false,
+  onFeedback,
+  isResponding,
+  allToolIcons,
+  suggestionClick = () => { },
+}) => {
+  const { id, content, feedback, agent_thoughts, workflowProcess, suggestedQuestions = [] } = item
+  const isAgentMode = !!agent_thoughts && agent_thoughts.length > 0
+
+  const { t } = useTranslation()
+  const [isCopied, setIsCopied] = useState(false)
+
+  /**
+ * Render feedback results (distinguish between users and administrators)
+ * User reviews cannot be cancelled in Console
+ * @param rating feedback result
+ * @param isUserFeedback Whether it is user's feedback
+ * @returns comp
+ */
+  const renderFeedbackRating = (rating: MessageRating | undefined) => {
+    const feedbackRating = (feedback as any)?.rating
+    const feedbackId = (feedback as any)?.id
+    const hasFeedback = Boolean(feedbackRating)
+    const isLike = feedbackRating === 'like'
+    const ratingIconClassname = isLike ? 'text-primary-600 bg-primary-100 hover:bg-primary-200' : 'text-red-600 bg-red-100 hover:bg-red-200'
+
+    return (
+      <Tooltip
+        selector={`user-feedback-${randomString(16)}`}
+        content={hasFeedback ? (isLike ? '取消赞同' : '取消反对') : ''}
+      >
+        <div
+          className={`${styles.operationBtn} ${!hasFeedback ? 'text-gray-500 hover:text-gray-800' : 'text-blue-500'}`}
+          onClick={async () => {
+            await onFeedback?.(id, { rating: null })
+          }}
+        >
+          <div className={`${ratingIconClassname} rounded-lg h-6 w-6 flex items-center justify-center`}>
+            <RatingIcon isLike={isLike} />
+          </div>
+        </div>
+      </Tooltip>
+    )
+  }
+
+  /**
+   * Different scenarios have different operation items.
+   * @returns comp
+   */
+  const renderFeedbackButtons = () => {
+    if (feedback?.rating)
+      return null
+
+    return (
+      <div className='flex gap-1'>
+        <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.like') as string}>
+          {OperationBtn({
+            innerContent: <IconWrapper><RatingIcon isLike={true} /></IconWrapper>,
+            onClick: () => onFeedback?.(id, { rating: 'like' }),
+          })}
+        </Tooltip>
+        <Tooltip selector={`user-feedback-${randomString(16)}`} content={t('common.operation.dislike') as string}>
+          {OperationBtn({
+            innerContent: <IconWrapper><RatingIcon isLike={false} /></IconWrapper>,
+            onClick: () => onFeedback?.(id, { rating: 'dislike' }),
+          })}
+        </Tooltip>
+      </div>
+    )
+  }
+
+  const getImgs = (list?: VisionFile[]) => {
+    if (!list)
+      return []
+    return list.filter(file => file.type === 'image' && file.belongs_to === 'assistant')
+  }
+
+  // 保存为图片的函数
+  const saveAsImage = async () => {
+    const answerElement = document.getElementById(`answer-${id}`)
+    if (answerElement) {
+      // 临时隐藏按钮容器
+      const buttonContainer = document.querySelector(`#answer-${id} .flex.justify-end.mt-3.mb-1.mr-2`) as HTMLElement
+      let originalDisplay = ''
+      if (buttonContainer) {
+        originalDisplay = buttonContainer.style.display
+        buttonContainer.style.display = 'none'
+      }
+
+      try {
+        const canvas = await html2canvas(answerElement, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          allowTaint: true,
+          logging: false,
+          onclone: (clonedDoc) => {
+            // 隐藏交互元素如复制按钮
+            clonedDoc.querySelectorAll('.copy-button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+            // 可选：隐藏 ThinkBlock 按钮等
+            clonedDoc.querySelectorAll('.ThinkBlock button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+          },
+        })
+        const image = canvas.toDataURL('image/png')
+        const link = document.createElement('a')
+        link.href = image
+        link.download = `answer-${id}.png`
+        link.click()
+      }
+      catch (error) {
+        console.error('保存图片失败:', error)
+      }
+      finally {
+        // 恢复按钮容器
+        if (buttonContainer)
+          buttonContainer.style.display = originalDisplay || 'flex'
+      }
+    }
+  }
+
+  // 保存为PDF的函数
+  const saveAsPDF = async () => {
+    const answerElement = document.getElementById(`answer-${id}`)
+    if (answerElement) {
+      // 临时隐藏按钮容器
+      const buttonContainer = document.querySelector(`#answer-${id} .flex.justify-end.mt-3.mb-1.mr-2`) as HTMLElement
+      let originalDisplay = ''
+      if (buttonContainer) {
+        originalDisplay = buttonContainer.style.display
+        buttonContainer.style.display = 'none'
+      }
+
+      try {
+        const canvas = await html2canvas(answerElement, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          allowTaint: true,
+          logging: false,
+          onclone: (clonedDoc) => {
+            // 隐藏交互元素如复制按钮
+            clonedDoc.querySelectorAll('.copy-button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+            // 可选：隐藏 ThinkBlock 按钮等
+            clonedDoc.querySelectorAll('.ThinkBlock button').forEach((el) => {
+              (el as HTMLElement).style.display = 'none'
+            })
+          },
+        })
+        const imgData = canvas.toDataURL('image/png')
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'px',
+          format: [canvas.width, canvas.height],
+        })
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height)
+        pdf.save(`answer-${id}.pdf`)
+      }
+      catch (error) {
+        console.error('保存PDF失败:', error)
+      }
+      finally {
+        // 恢复按钮容器
+        if (buttonContainer)
+          buttonContainer.style.display = originalDisplay || 'flex'
+      }
+    }
+  }
+
+  // 复制到剪贴板的函数
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    }
+    catch (error) {
+      console.error('复制失败:', error)
+    }
+  }
+
+  const agentModeAnswer = (
+    <div>
+      {agent_thoughts?.map((item, index) => (
+        <div key={index}>
+          {item.thought && (
+            <Markdown className="prose prose-sm max-w-none" content={item.thought} />
+          )}
+          {/* {item.tool} */}
+          {/* perhaps not use tool */}
+          {!!item.tool && (
+            <Thought
+              thought={item}
+              allToolIcons={allToolIcons || {}}
+              isFinished={!!item.observation || !isResponding}
+            />
+          )}
+
+          {getImgs(item.message_files).length > 0 && (
+            <ImageGallery srcs={getImgs(item.message_files).map(img => `http://192.168.0.110${img.url}`)} />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+
+  return (
+    <div className='flex items-start'>
+      <div className={`${styles.answerIcon} w-10 h-10 shrink-0 relative`}>
+        <div className={`relative w-full h-full ${isResponding ? styles.spinning : ''}`}>
+          <div className={styles.spinner}></div>
+          <div className={styles.spinnerInner}></div>
+        </div>
+        {isResponding && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-6 h-6">
+              <LoadingAnim type="avatar" />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className={`${styles.answerWrap}`}>
+        <div id={`answer-${id}`} className={`${styles.answer} relative text-sm text-gray-900 min-h-full overflow-auto`}>
+          <div className={`ml-2 py-4 px-6 bg-gray-100 rounded-tr-2xl rounded-b-2xl relative z-1 ${workflowProcess && 'min-w-[480px]'}`}>
+            {workflowProcess && (
+              <WorkflowProcess data={workflowProcess} hideInfo />
+            )}
+            {(isResponding && (isAgentMode ? (!content && (agent_thoughts || []).filter(item => !!item.thought || !!item.tool).length === 0) : !content))
+              ? (
+                <div className='flex items-center justify-center w-6 h-5'>
+                  <LoadingAnim type='text' />
+                </div>
+              )
+              : (isAgentMode
+                ? agentModeAnswer
+                : (
+                  <ChartRenderer content={content} />
+                ))}
+            {suggestedQuestions.length > 0 && (
+              <div className='mt-3'>
+                <div className='flex gap-1 mt-1 flex-wrap'>
+                  {suggestedQuestions.map((suggestion, index) => (
+                    <div key={index} className='flex items-center gap-1'>
+                      <Button className='text-sm' type='link' onClick={() => suggestionClick(suggestion)}>{suggestion}</Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className='flex justify-end mt-3 mb-1 mr-2'>
+            <div className='flex flex-row justify-end gap-2 bg-white bg-opacity-80 rounded-lg p-1 transition-all hover:bg-opacity-100'>
+              {!feedbackDisabled && !item.feedbackDisabled && (
+                feedback?.rating
+                  ? (
+                    // Show only the selected feedback button
+                    renderFeedbackRating(feedback.rating)
+                  )
+                  : (
+                    // Show both like/dislike buttons when no feedback given
+                    <>
+                      {renderFeedbackButtons()}
+                      <div className='flex gap-1 items-center'>
+                        <Tooltip selector={`copy-${id}`} content={t('common.operation.copy') || '复制该消息'}>
+                          {OperationBtn({
+                            innerContent: (
+                              <IconWrapper className={isCopied ? 'bg-green-100 text-green-600' : ''}>
+                                {isCopied ? <CheckIcon /> : <CopyIcon />}
+                              </IconWrapper>
+                            ),
+                            onClick: copyToClipboard,
+                          })}
+                        </Tooltip>
+                      </div>
+                    </>
+                  )
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default React.memo(Answer)
+
+export type { IAnswerProps }
