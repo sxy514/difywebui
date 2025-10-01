@@ -66,19 +66,19 @@ const Sidebar: FC<ISidebarProps> = ({
           </div>
         </a>
       </div>
-      <div className="kimi-plus-part p-4 border-b border-blue-700/50">
-        <a href="#" className="nav-item kimi-plus-square flex items-center text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 p-3 transition-all duration-200">
+      <div className="amhs-plus-part p-4 border-b border-blue-700/50">
+        <a href="#" className="nav-item amhs-plus-square flex items-center text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 p-3 transition-all duration-200">
           <StarIcon className="mr-2 h-4 w-4 text-yellow-300" />
           <span>App Market+</span>
         </a>
         <ul className="mt-3 space-y-2">
           <li>
-            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
-              <div className="kimi-plus-info flex items-center">
-                <div className="kimi-plus-avatar mr-3">
+            <a href="#" className="amhs-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+              <div className="amhs-plus-info flex items-center">
+                <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/academic.png" alt="学术搜索" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="kimi-plus-name text-sm">学术搜索</span>
+                <span className="amhs-plus-name text-sm">学术搜索</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
@@ -86,12 +86,12 @@ const Sidebar: FC<ISidebarProps> = ({
             </a>
           </li>
           <li>
-            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
-              <div className="kimi-plus-info flex items-center">
-                <div className="kimi-plus-avatar mr-3">
+            <a href="#" className="amhs-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+              <div className="amhs-plus-info flex items-center">
+                <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/translate.png" alt="翻译通" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="kimi-plus-name text-sm">翻译通</span>
+                <span className="amhs-plus-name text-sm">翻译通</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
@@ -99,12 +99,12 @@ const Sidebar: FC<ISidebarProps> = ({
             </a>
           </li>
           <li>
-            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
-              <div className="kimi-plus-info flex items-center">
-                <div className="kimi-plus-avatar mr-3">
+            <a href="#" className="amhs-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+              <div className="amhs-plus-info flex items-center">
+                <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/medical-search.png" alt="医疗搜索" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="kimi-plus-name text-sm">医疗搜索</span>
+                <span className="amhs-plus-name text-sm">医疗搜索</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
@@ -112,12 +112,12 @@ const Sidebar: FC<ISidebarProps> = ({
             </a>
           </li>
           <li>
-            <a href="#" className="kimi-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
-              <div className="kimi-plus-info flex items-center">
-                <div className="kimi-plus-avatar mr-3">
+            <a href="#" className="amhs-plus-item flex items-center justify-between w-full rounded-lg hover:bg-white/10 p-2 transition-all">
+              <div className="amhs-plus-info flex items-center">
+                <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/新PPT助手.png" alt="PPT 助手" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="kimi-plus-name text-sm">PPT 助手</span>
+                <span className="amhs-plus-name text-sm">PPT 助手</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
