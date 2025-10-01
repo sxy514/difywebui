@@ -190,7 +190,7 @@ const Chat: FC<IChatProps> = ({
                 <div className='relative flex items-center'>
                   <Textarea
                     className={`
-                      block w-full pr-16 py-2 text-sm text-gray-800 outline-none appearance-none resize-none
+                      block w-full pr-16 py-2 text-sm text-gray-800 outline-none appearance-none resize-none max-h-64 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]
                       bg-transparent placeholder-gray-400 focus:ring-0 border-0 transition-all duration-200
                       ${visionConfig?.enabled ? 'pl-10' : 'pl-4'}
                     `}
@@ -199,7 +199,7 @@ const Chat: FC<IChatProps> = ({
                     onChange={handleContentChange}
                     onKeyUp={handleKeyUp}
                     onKeyDown={handleKeyDown}
-                    autoSize
+                    autoSize={{ minRows: 1, maxRows: 10 }}
                   />
                   <div className='absolute right-0 flex items-center space-x-1'>
                     <div className={`text-xs text-gray-400 mr-2 ${!query.trim() ? 'invisible' : ''}`}>
