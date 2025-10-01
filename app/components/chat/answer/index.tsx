@@ -365,7 +365,23 @@ const Answer: FC<IAnswerProps> = ({
   // 复制到剪贴板的函数
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(content)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(content)
+      } else {
+        // 兼容老版本浏览器的复制方法
+        const textArea = document.createElement('textarea')
+        textArea.value = content
+        document.body.appendChild(textArea)
+        textArea.select()
+        try {
+          document.execCommand('copy')
+        } catch (err) {
+          console.error('Fallback: 复制失败', err)
+          throw err
+        } finally {
+          document.body.removeChild(textArea)
+        }
+      }
       setIsCopied(true)
       setTimeout(() => setIsCopied(false), 2000)
     }
