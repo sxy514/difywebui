@@ -402,7 +402,7 @@ const Answer: FC<IAnswerProps> = ({
   return (
     <div className='flex items-start'>
       <div className={`${styles.answerIcon} w-10 h-10 shrink-0 relative`}>
-        <div className="relative w-full h-full">
+        <div className={`relative w-full h-full ${isResponding ? styles.spinning : ''}`}>
           <div className={styles.spinner}></div>
           <div className={styles.spinnerInner}></div>
         </div>

@@ -174,9 +174,9 @@
   height: 100%;
   background: linear-gradient(rgb(186, 66, 255) 35%, rgb(0, 225, 255));
   border-radius: 50%;
-  animation: spinning 1.7s linear infinite;
   filter: blur(1px);
   box-shadow: 0px -5px 20px 0px rgb(186, 66, 255), 0px 5px 20px 0px rgb(0, 225, 255);
+  transition: transform 0.5s ease-in-out;
 }
 
 .spinnerInner {
@@ -188,6 +188,10 @@
   background-color: rgb(36, 36, 36);
   border-radius: 50%;
   filter: blur(5px);
+}
+
+.spinning {
+  animation: spinning 1.7s linear infinite;
 }
 
 @keyframes spinning {
