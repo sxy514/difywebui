@@ -78,7 +78,7 @@ const Sidebar: FC<ISidebarProps> = ({
                 <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/academic.png" alt="学术搜索" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="amhs-plus-name text-sm">学术搜索</span>
+                <span className="amhs-plus-name text-sm">搬送情况分析</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
@@ -91,7 +91,7 @@ const Sidebar: FC<ISidebarProps> = ({
                 <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/translate.png" alt="翻译通" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="amhs-plus-name text-sm">翻译通</span>
+                <span className="amhs-plus-name text-sm">设备报警统计</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
@@ -104,7 +104,7 @@ const Sidebar: FC<ISidebarProps> = ({
                 <div className="amhs-plus-avatar mr-3">
                   <img src="https://kimi-img.moonshot.cn/prod-chat-kimi/avatar/kimiplus/medical-search.png" alt="医疗搜索" className="w-8 h-8 rounded-full" />
                 </div>
-                <span className="amhs-plus-name text-sm">医疗搜索</span>
+                <span className="amhs-plus-name text-sm">PMS数据统计</span>
               </div>
               <div className="more-btn">
                 <EllipsisVerticalIcon className="h-4 w-4 text-white/70 hover:text-white cursor-pointer" />
